@@ -1,50 +1,94 @@
 ---
 title: "Exchange Rates"
-description: "Learn about exchange rates"
+description: "Understanding floating and locked exchange rates"
 ---
 
-The **Exchange Rates** module enables real-time currency quotation, a critical component for forex transactions. Main Objetive is facilitate transparent and competitive currency conversion using stablecoins as a bridge.
+The Lumx platform offers two types of exchange rates for currency conversion: **floating** and **locked** rates. Each serves different use cases and provides specific benefits.
 
-It simplifies and facilitates competitive currency conversion by:
+## Floating Exchange Rates
 
-* Acting as an intermediary for fiat-to-crypto conversions using stablecoins.
+Floating rates provide real-time currency conversion rates that fluctuate based on current market conditions. The rate is calculated at the moment of the quote request and again at transaction execution.
 
-* Providing transparent and predictable conversion rates to enhance user confidence in cross-border transactions.
+### When to Use Floating Rates
+- Immediate transaction execution
+- Comfortable with rate fluctuations  
+- Avoiding locking fees
+- Real-time rate discovery
 
-### Main Features:
+### Key Characteristics
+- No rate guarantee
+- Market rate at execution time
+- Optional partner fee configuration
+- High flexibility
 
-* Fetch live exchange rates for supported fiat and cryptocurrency pairs.
+## Locked Exchange Rates
 
-* Ensure users always have access to the most accurate and up-to-date rates for their transactions.
+Locked rates provide a guaranteed conversion rate for a specific time window, offering rate certainty and protection against market fluctuations.
 
-* Enable automatic rate refresh during periods of high market volatility.
+### When to Use Locked Rates
+- Need rate certainty before execution
+- Protection against adverse rate movements
+- Displaying exact conversion amounts to users
+- Multi-step approval processes
 
-* Clearly display any fees applied to conversions for complete transparency.
+### Time Lock Options
+- **30 seconds**: Quick confirmations, automated systems
+- **1 minute**: Standard user interactions
+- **5 minutes**: Complex approvals, multi-step processes
 
-* Provide detailed breakdowns of conversion calculations for end-user visibility.
+### Key Characteristics
+- Guaranteed rate for lock duration
+- Both source and target amounts required
+- One-time use per rate ID
+- Expires after time lock duration
 
-* Clients can request a provisional exchange rate by specifying the source and target currencies.
+## Comparison: Floating vs. Locked Rates
 
-### Exchange Rates Retrieval
+| Feature | Floating Rate | Locked Rate |
+|---------|--------------|-------------|
+| Rate Guarantee | No | Yes (for specified duration) |
+| Lock Duration | N/A | 30s, 1m, or 5m |
+| Amount Specification | Source only | Both source and target |
+| Best For | Immediate execution | Rate certainty needed |
+| Rate ID Required | No | Yes |
+| Expiration | No | Yes |
+| Setup Required | Optional partnerFeeId | Exchange rate must be locked first |
 
-The API normalizes data from external providers into a unified Lumx format, abstracting provider-specific complexities.
+## Fee Structure
 
-Data points included in an exchange rate response:
+Both rate types support transparent fee structures:
 
-* **Lumx ID:** Unique identifier for the exchange rate within Lumx.
+### Lumx Fees
+- Platform fees (percentage + flat amount)
+- Applied to all transactions
+- Calculated transparently in quotes
 
-* **Provider ID:** Internal reference for the source provider (not exposed in API response).
+### Partner Fees  
+- Custom fees via `partnerFeeId`
+- Optional configuration
+- Applied on top of Lumx fees
 
-* **External ID:** Identifier for the rate in the external provider’s system (not exposed in API response).
+## Rate Benefits
 
-* **Source Currency:** The original currency being converted.
+### Floating Rate Benefits
+- Real-time market rates
+- No locking overhead
+- Flexible execution timing
+- Lower complexity
 
-* **Target Currency:** The currency being converted into.
+### Locked Rate Benefits
+- **Rate Guarantee**: Protected for lock duration
+- **Fee Transparency**: All fees calculated upfront
+- **User Experience**: Display exact amounts before commitment
+- **Risk Management**: Protection against volatility
 
-* **Rate:** The conversion rate provided.
+## Important Considerations
 
-* **Expires At:** Timestamp indicating when the rate will no longer be valid.
+### Rate Volatility
+Floating rates change between quote and execution, while locked rates remain fixed during the lock window.
 
-* **Created At:** Timestamp of when the exchange rate was generated.
+### Time Management
+Locked rates must be used before expiration. Monitor the `expiresAt` timestamp for timely execution.
 
-Next, let's learn more about our [On/Off ramp processes](/concepts/onofframp).
+### One-Time Use
+Each locked rate ID can only be used once. Create new locked rates for each transaction.

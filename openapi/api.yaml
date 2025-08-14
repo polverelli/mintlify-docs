@@ -4,8 +4,7 @@ info:
   title: Lumx API
   description: A cross-border banking API with instant settlements and unmatched liquidity, powered by stablecoins.
 servers:
-  - url: https://api-sandbox.lumx.io
-  - url: https://api.lumx.io
+  - url: https://12bc964aa935.ngrok-free.app/
 paths:
   /customers:
     get:
@@ -119,8 +118,8 @@ paths:
     get:
       tags:
         - Customers
-      summary: Read a customer verification
-      description: This endpoint reads a customer verification.
+      summary: Read a verification
+      description: This endpoint reads a customer's verification process.
       parameters:
         - name: id
           in: path
@@ -146,8 +145,8 @@ paths:
     post:
       tags:
         - Customers
-      summary: Start a customer verification
-      description: This endpoint starts a customer verification.
+      summary: Start a verification
+      description: This endpoint starts the process of verifying a customer.
       parameters:
         - name: id
           in: path
@@ -1479,8 +1478,6 @@ components:
                   description: Exchange rate type is locked.
                   title: Locked
                 - $ref: '#/components/schemas/ExchangeRateLocked'
-      required:
-        - type
     ExchangeRateResponse:
       allOf:
         - oneOf:
@@ -1654,6 +1651,11 @@ components:
           description: Partner fee id to be used for this exchange rate.
           format: uuid
           example: '123e4567-e89b-12d3-a456-426614174004'
+      required:
+        - type
+        - sourceCurrency
+        - sourceAmount
+        - targetCurrency
     ExchangeRateLocked:
       type: object
       properties:

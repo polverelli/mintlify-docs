@@ -21,18 +21,15 @@
               "get-started/environments",
               "get-started/blockchains",
               "get-started/coverage",
-              "get-started/testing",
-              "get-started/webhooks",
-              "get-started/partner-fees",
               "get-started/troubleshooting"
             ]
           },
           {
-            "group": "Concepts",
+            "group": "Core Concepts",
             "pages": [
-              "concepts/apis",
-              "concepts/accounts",
-              "concepts/orchestration"
+              "concepts/customers",
+              "concepts/exchange-rates",
+              "concepts/transactions"
             ]
           },
           {
@@ -49,9 +46,25 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Customer",
             "pages": [
-              "guides/customer-onboarding"
+              "guides/individual-onboarding",
+              "guides/business-onboarding"
+            ]
+          },
+          {
+            "group": "Exchange Rates",
+            "pages": [
+              "guides/floating-exchange-rate",
+              "guides/locked-exchange-rate"
+            ]
+          },
+          {
+            "group": "Transactions",
+            "pages": [
+              "guides/on-ramp-transactions",
+              "guides/off-ramp-transactions",
+              "guides/transfer-transactions"
             ]
           }
         ]

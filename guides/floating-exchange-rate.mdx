@@ -1,0 +1,145 @@
+---
+title: "Get a Floating Exchange Rate"
+description: "Get real-time exchange rates for currency conversion"
+---
+
+Get real-time exchange rates for currency conversion.
+
+## Process Overview
+
+<Steps>
+  <Step title="Request Quote">
+    Get current exchange rate with source amount and currencies
+  </Step>
+  <Step title="Review Rate">
+    Check the exchange rate and fee breakdown
+  </Step>
+  <Step title="Use in Transaction">
+    Apply the floating rate to an on-ramp or off-ramp transaction
+  </Step>
+</Steps>
+
+## How to Get a Floating Exchange Rate
+
+To get a floating exchange rate quote, use the `/exchange-rates` endpoint with the `floating` type.
+
+### Request Example
+
+```bash
+curl -X POST https://api.lumx.io/exchange-rates \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "floating",
+    "sourceCurrency": "BRL",
+    "sourceAmount": "5925.55",
+    "targetCurrency": "USDC"
+  }'
+```
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | string | Yes | Must be `"floating"` |
+| `sourceCurrency` | string | Yes | Source currency code (`BRL`, `USDC`, `USDT`) |
+| `sourceAmount` | string | Yes | Amount to convert in source currency |
+| `targetCurrency` | string | Yes | Target currency code (`BRL`, `USDC`, `USDT`) |
+| `partnerFeeId` | string | No | UUID of partner fee configuration to apply |
+
+### Response Example
+
+```json
+{
+  "type": "floating",
+  "sourceCurrency": "BRL",
+  "sourceAmount": "5925.55",
+  "targetCurrency": "USDC",
+  "baseTargetAmount": "1000.000000",
+  "baseExchangeRate": "5.9255",
+  "fees": {
+    "lumx": {
+      "rate": "10",
+      "flatAmount": "1",
+      "totalAmount": "11",
+      "currency": "USDC"
+    },
+    "partner": {
+      "rate": "10",
+      "flatAmount": "1",
+      "totalAmount": "11",
+      "currency": "USDC"
+    }
+  },
+  "finalTargetAmount": "978.000000",
+  "finalExchangeRate": "6.0567"
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `type` | Exchange rate type (`floating`) |
+| `sourceCurrency` | The currency being converted from |
+| `sourceAmount` | The amount in source currency |
+| `targetCurrency` | The currency being converted to |
+| `baseTargetAmount` | Target amount before fees |
+| `baseExchangeRate` | Base exchange rate before fees |
+| `fees` | Breakdown of Lumx and partner fees (if partnerFeeId provided) |
+| `finalTargetAmount` | Final amount after all fees |
+| `finalExchangeRate` | Effective rate including fees |
+
+## Using Floating Rates in Transactions
+
+When creating on-ramp or off-ramp transactions with floating rates, you specify the currencies and amounts directly without providing an exchange rate ID.
+
+### On-Ramp with Floating Rate
+
+```bash
+curl -X POST https://api.lumx.io/transactions/on-ramp \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+    "sourceCurrency": "BRL",
+    "sourceAmount": "10000.00",
+    "targetCurrency": "USDC",
+    "payment": {
+      "rail": "pix"
+    },
+    "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+  }'
+```
+
+<Note>
+  The `partnerFeeId` is optional. If not provided, default fees apply.
+</Note>
+
+### Off-Ramp with Floating Rate
+
+```bash
+curl -X POST https://api.lumx.io/transactions/off-ramp \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "123e4567-e89b-12d3-a456-426614174000",
+    "sourceCurrency": "USDC",
+    "sourceAmount": "1000.00",
+    "targetCurrency": "BRL",
+    "payment": {
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    },
+    "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+  }'
+```
+
+
+## Next Steps
+
+- Learn about [Locked Exchange Rates](/guides/locked-exchange-rate) for guaranteed rates
+- Configure [Partner Fees](/get-started/partner-fees) for custom fee structures
+- Explore [On-Ramp Transactions](/api-reference/transactions/on-ramp) to convert fiat to stablecoins
+- Review [Off-Ramp Transactions](/api-reference/transactions/off-ramp) to convert stablecoins to fiat

@@ -1,0 +1,154 @@
+---
+title: "Get a Locked Exchange Rate"
+description: "Lock exchange rates for guaranteed conversion rates"
+---
+
+Lock exchange rates for guaranteed conversion during a specific time window.
+
+## Process Overview
+
+<Steps>
+  <Step title="Request Locked Rate">
+    Get a guaranteed rate with specified time lock duration
+  </Step>
+  <Step title="Receive Rate ID">
+    Get unique identifier valid for the lock period
+  </Step>
+  <Step title="Execute Transaction">
+    Use the rate ID before expiration
+  </Step>
+  <Step title="Complete Within Time">
+    Ensure transaction is initiated before rate expires
+  </Step>
+</Steps>
+
+## How to Create a Locked Exchange Rate
+
+To create a locked exchange rate, use the `/exchange-rates` endpoint with the `locked` type.
+
+### Request Example
+
+```bash
+curl -X POST https://api.lumx.io/exchange-rates \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "locked",
+    "sourceCurrency": "BRL",
+    "sourceAmount": "5925.55",
+    "targetCurrency": "USDC",
+    "targetAmount": "1000.00",
+    "timeLock": "5m"
+  }'
+```
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | string | Yes | Must be `"locked"` |
+| `sourceCurrency` | string | Yes | Source currency code (`BRL`, `USDC`, `USDT`) |
+| `sourceAmount` | string | Yes | Amount in source currency |
+| `targetCurrency` | string | Yes | Target currency code (`BRL`, `USDC`, `USDT`) |
+| `targetAmount` | string | Yes | Desired amount in target currency |
+| `timeLock` | string | No | Lock duration: `30s`, `1m`, or `5m` (default: `30s`) |
+
+### Response Example
+
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174001",
+  "type": "locked",
+  "expiresAt": "2026-05-05T00:05:00Z",
+  "sourceCurrency": "BRL",
+  "sourceAmount": "5925.55",
+  "targetCurrency": "USDC",
+  "baseTargetAmount": "1000.000000",
+  "baseExchangeRate": "5.9255",
+  "fees": {
+    "lumx": {
+      "rate": "10",
+      "flatAmount": "1",
+      "totalAmount": "11",
+      "currency": "USDC"
+    },
+    "partner": {
+      "rate": "10",
+      "flatAmount": "1",
+      "totalAmount": "11",
+      "currency": "USDC"
+    }
+  },
+  "finalTargetAmount": "1000.000000",
+  "finalExchangeRate": "5.9255"
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique identifier for the locked rate |
+| `type` | Exchange rate type (`locked`) |
+| `expiresAt` | UTC timestamp when the rate expires |
+| `sourceCurrency` | The currency being converted from |
+| `sourceAmount` | The amount in source currency |
+| `targetCurrency` | The currency being converted to |
+| `baseTargetAmount` | Target amount before fees |
+| `baseExchangeRate` | Base exchange rate before fees |
+| `fees` | Breakdown of all applicable fees |
+| `finalTargetAmount` | Final amount after all fees |
+| `finalExchangeRate` | Effective rate including fees |
+
+## Time Lock Options
+
+- `30s` - 30 seconds (default)
+- `1m` - 1 minute
+- `5m` - 5 minutes
+
+## Using Locked Rates in Transactions
+
+Once you have a locked rate ID, use it to execute transactions at the guaranteed rate within the lock window.
+
+### On-Ramp with Locked Rate
+
+```bash
+curl -X POST https://api.lumx.io/transactions/on-ramp \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+    "exchangeRateId": "123e4567-e89b-12d3-a456-426614174001",
+    "payment": {
+      "rail": "pix"
+    }
+  }'
+```
+
+### Off-Ramp with Locked Rate
+
+```bash
+curl -X POST https://api.lumx.io/transactions/off-ramp \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "123e4567-e89b-12d3-a456-426614174000",
+    "exchangeRateId": "123e4567-e89b-12d3-a456-426614174001",
+    "payment": {
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    }
+  }'
+```
+
+<Note>
+  Both `sourceAmount` and `targetAmount` are required for locked rates.
+  Each rate ID can only be used once and expires after the time lock duration.
+</Note>
+
+## Next Steps
+
+- Learn about [Floating Exchange Rates](/guides/floating-exchange-rate) for real-time rates
+- Configure [Partner Fees](/get-started/partner-fees) for custom fee structures
+- Explore [Transaction Types](/api-reference/transactions/on-ramp) for on-ramp and off-ramp operations
