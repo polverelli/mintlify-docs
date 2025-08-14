@@ -1,89 +1,77 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "aspen",
+  "name": "Lumx",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#6E05FF",
+    "light": "#843BFF",
+    "dark": "#030712"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "get-started/welcome",
+              "get-started/authentication",
+              "get-started/environments",
+              "get-started/blockchains",
+              "get-started/coverage",
+              "get-started/testing",
+              "get-started/webhooks",
+              "get-started/partner-fees",
+              "get-started/troubleshooting"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Concepts",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "concepts/apis",
+              "concepts/accounts",
+              "concepts/orchestration"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Compliance",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "compliance/beneficiaries",
+              "compliance/compliance-requirements",
+              "compliance/prohibited-activities"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Guides",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Getting Started",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "guides/customer-onboarding"
             ]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": "/openapi/api.yaml"
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Dashboard",
+          "href": "https://dashboard.lumx.io",
+          "icon": "rocket"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "OpenAPI",
+          "href": "https://raw.githubusercontent.com/lumx-protocol/docs/refs/heads/main/openapi/api.yaml",
+          "icon": "circle"
         }
       ]
     }
@@ -92,36 +80,48 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
+  "appearance": {
+    "default": "light"
+  },
+  "background": {
+    "color": {
+      "dark": "#141416"
+    }
+  },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://join.slack.com/t/lumxprotocol/shared_invite/zt-2r5c6zxk3-5QGGZ3mUtLel5te1dIG4Mg"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Start right now",
+      "href": "https://dashboard.lumx.io"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/lumx-protocol",
+      "twitter": "https://twitter.com/hellolumx",
+      "linkedin": "https://www.linkedin.com/company/hellolumx"
+    }
+  },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-0MVRGD699K"
+    },
+    "mixpanel": {
+      "projectToken": "87f5c334d0c77d5e7585a110f542f9ed"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
     }
   }
 }

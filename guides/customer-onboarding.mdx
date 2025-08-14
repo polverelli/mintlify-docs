@@ -1,0 +1,351 @@
+---
+title: 'Customer Onboarding'
+description: 'Complete guide to onboard Individual and Business customers through KYC/KYB verification'
+---
+
+This guide walks you through the complete customer onboarding process on the Lumx platform, from initial creation to full verification.
+
+<CardGroup cols={2}>
+  <Card 
+    title="Use the Dashboard" 
+    icon="browser" 
+    href="https://dashboard.lumx.io/?to=%2Fcustomers"
+  >
+    Visual interface for customer management
+  </Card>
+  <Card 
+    title="Use the API" 
+    icon="code" 
+    href="/api-reference/customers/create-a-customer"
+  >
+    Programmatic customer creation
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+Before starting the onboarding process, ensure you have:
+
+- API credentials ([Get your API key](/get-started/authentication))
+- Customer information ready (personal/business details)
+- Required documents in digital format (PDF, PNG, or JPEG)
+
+<Tip>
+  We provide a **compliance partner link** for easier interactions and better approval rates. This link is available both via API and dashboard, streamlining the verification process.
+</Tip>
+
+## Step 1: Create a Customer
+
+Start by creating a customer profile. Customers can be either **Individual** or **Business** entities.
+
+<CodeGroup>
+```bash Individual Customer
+curl -X POST https://api.lumx.io/customers \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "individual",
+    "name": "John Doe",
+    "taxId": "123.456.789-00",
+    "birthDate": "1990-01-01",
+    "country": "BRA",
+    "email": "john.doe@example.com"
+  }'
+```
+
+```bash Business Customer
+curl -X POST https://api.lumx.io/customers \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "business",
+    "legalName": "Acme Corporation",
+    "taxId": "12.345.678/0001-00",
+    "incorporationDate": "2020-01-01",
+    "country": "BRA",
+    "email": "contact@acme.com",
+    "beneficiaries": [
+      {
+        "type": "individual",
+        "name": "Jane Smith",
+        "taxId": "987.654.321-00",
+        "birthDate": "1985-05-15",
+        "country": "BRA",
+        "email": "jane@acme.com",
+        "sharePercentage": 30
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+<Warning>
+  For **Business customers**, you must include all beneficiaries with 20% or more ownership. These beneficiaries are automatically linked - no separate Individual customer creation is needed.
+</Warning>
+
+The response includes a `customerId` that you'll use in subsequent steps:
+
+```json
+{
+  "id": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "individual",
+  "name": "John Doe",
+  "walletAddress": "0x1234567890123456789012345678901234567890",
+  // ... other fields
+}
+```
+
+## Step 2: Upload Documents
+
+After creating the customer, upload the required verification documents.
+
+### Document Requirements
+
+<Tabs>
+  <Tab title="Individual">
+    **Required Documents:**
+    
+    1. **Identity Document** (choose one):
+       - National ID card (`id_card`)
+       - Driver's license (`drivers_license`)
+       - Passport (`passport`)
+    
+    2. **Proof of Address** (`proof_of_address`)
+       - Must be dated within the last 3 months
+       - Must show full name and residential address
+
+    <Accordion title="Valid Proof of Address Examples">
+      - Utility bills (water, electricity, gas, internet)
+      - Bank or credit card statements
+      - Rental agreement (signed by both parties)
+      - Property tax bill (valid for up to 1 year)
+      - Mortgage agreement
+      - Landline phone bill
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Business">
+    **Required Documents:**
+    
+    1. **Legal Incorporation Documents**:
+       - Articles of incorporation (`incorporation_articles`)
+       - Certificate of formation
+       - State business registration extract
+       - Incumbency certificate (`incumbency_cert`)
+       - Shareholder registry (`shareholder_registry`)
+    
+    2. **Beneficiary Documents**:
+       - Same requirements as Individual customers
+       - Required for all beneficiaries with 20%+ ownership
+       - Include `beneficiaryId` when uploading
+    
+    3. **Business Proof of Address** (`proof_of_address`)
+       - Valid lease agreement
+       - Utility bill (dated within 3 months)
+       - Bank statement
+  </Tab>
+</Tabs>
+
+### Upload Process
+
+Use multipart/form-data to upload documents:
+
+<CodeGroup>
+```bash Single-sided Document
+curl -X POST https://api.lumx.io/customers/{customerId}/documents \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@/path/to/document.pdf" \
+  -F 'metadata={
+    "type": "passport",
+    "country": "BRA"
+  }'
+```
+
+```bash Double-sided Document (Front)
+curl -X POST https://api.lumx.io/customers/{customerId}/documents \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@/path/to/id_front.jpg" \
+  -F 'metadata={
+    "type": "id_card",
+    "country": "BRA",
+    "side": "front_side"
+  }'
+```
+
+```bash Double-sided Document (Back)
+curl -X POST https://api.lumx.io/customers/{customerId}/documents \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@/path/to/id_back.jpg" \
+  -F 'metadata={
+    "type": "id_card",
+    "country": "BRA",
+    "side": "back_side"
+  }'
+```
+
+```bash Beneficiary Document
+curl -X POST https://api.lumx.io/customers/{customerId}/documents \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@/path/to/beneficiary_doc.pdf" \
+  -F 'metadata={
+    "type": "passport",
+    "country": "BRA",
+    "beneficiaryId": "123e4567-e89b-12d3-a456-426614174000"
+  }'
+```
+</CodeGroup>
+
+<Info>
+  **File Requirements:**
+  - Formats: PDF, PNG, or JPEG
+  - Maximum size: 50MB per document
+  - Documents must be clearly legible and fully visible
+  - Both physical (scanned) and digital documents are accepted
+</Info>
+
+## Step 3: Start Verification
+
+Once all documents are uploaded, initiate the verification process:
+
+```bash
+curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+This triggers the KYC/KYB verification process with our compliance partner.
+
+<Note>
+  **Processing Times:**
+  - **Individual (KYC)**: Usually completed within minutes
+  - **Business (KYB)**: Can take up to 24 hours
+</Note>
+
+## Step 4: Monitor Verification Status
+
+Check the verification progress and results:
+
+```bash
+curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Understanding Verification Statuses
+
+<CardGroup cols={2}>
+  <Card title="not_started" icon="circle-pause" color="#gray">
+    Verification hasn't been initiated yet
+  </Card>
+  <Card title="under_verification" icon="spinner" color="#blue">
+    Documents are being reviewed
+  </Card>
+  <Card title="approved" icon="circle-check" color="#green">
+    Customer is fully verified and ready to transact
+  </Card>
+  <Card title="temporary_rejection" icon="rotate-left" color="#orange">
+    Documents need to be re-submitted
+  </Card>
+  <Card title="final_rejection" icon="circle-xmark" color="#red">
+    Customer cannot be verified
+  </Card>
+</CardGroup>
+
+### Handling Rejections
+
+If verification returns `temporary_rejection`, the response includes details about what needs to be fixed:
+
+```json
+{
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "status": "temporary_rejection",
+  "statusReason": {
+    "rejectLabels": ["screenshot", "unsatisfactory_photos"],
+    "documents": [
+      {
+        "type": "passport",
+        "status": "temporary_rejection",
+        "comment": "Screenshots aren't accepted. Please upload a live photo of the document.",
+        "rejectLabels": ["screenshot"]
+      }
+    ]
+  }
+}
+```
+
+To resolve:
+1. Review the `statusReason` details
+2. Upload corrected documents
+3. Restart the verification process
+
+## Transaction Limits
+
+Once approved, customers receive transaction limits based on their verification level:
+
+| Limit Type | Standard KYC |
+|------------|--------------|
+| Single Transaction | $1,000 |
+| Daily | $10,000 |
+| Monthly | $100,000 |
+
+<Info>
+  Higher limits may be available for Business customers or enhanced verification levels. Contact support for more information.
+</Info>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Document Quality" icon="image">
+    - Ensure all text is clearly readable
+    - Avoid shadows or glare on documents
+    - Capture the entire document in frame
+    - Use high-resolution images (at least 300 DPI)
+  </Accordion>
+  
+  <Accordion title="Information Accuracy" icon="check">
+    - Double-check all entered information matches documents exactly
+    - Ensure tax IDs are properly formatted
+    - Verify email addresses are correct (used for notifications)
+  </Accordion>
+  
+  <Accordion title="Compliance Tips" icon="shield">
+    - Complete verification before attempting transactions
+    - Keep customer information updated
+    - Monitor for verification status changes via webhooks
+    - Maintain records of all uploaded documents
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+After successful customer onboarding:
+
+<CardGroup cols={3}>
+  <Card 
+    title="Add Funds" 
+    icon="money-bill-transfer" 
+    href="/api-reference/transactions/on-ramp"
+  >
+    Convert fiat to stablecoins
+  </Card>
+  <Card 
+    title="Make Transfers" 
+    icon="arrows-rotate" 
+    href="/api-reference/transactions/transfer"
+  >
+    Send funds between customers
+  </Card>
+  <Card 
+    title="Withdraw Funds" 
+    icon="bank" 
+    href="/api-reference/transactions/off-ramp"
+  >
+    Convert stablecoins to fiat
+  </Card>
+</CardGroup>
+
+## Related Resources
+
+- [API Authentication](/get-started/authentication)
+- [Testing Environment](/get-started/testing)
+- [Webhook Integration](/get-started/webhooks)
+- [Compliance Requirements](/compliance/compliance-requirements)
+- [Dashboard Access](https://dashboard.lumx.io)

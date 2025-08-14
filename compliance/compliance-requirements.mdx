@@ -1,0 +1,97 @@
+---
+title: 'Compliance Requirements'
+---
+
+All entities using Lumx services must agree to our [Terms and Conditions (“TC”)](https://lumx.io/terms-of-use) and our [Privacy Policy](https://lumx.io/privacy-policy). The preferred approach is to incorporate these documents within your own, ensuring your end users review and accept the terms before using Lumx services.
+
+If incorporating the TC directly is not feasible, we provide a dedicated [Terms and Conditions link](https://lumx.io/terms-of-use). Entities can share this link with their end users to ensure they agree to the terms before proceeding with Lumx services.[
+](https://docs.lumx.io/concepts/orchestration)
+
+Alternatively, we provide a dedicated Terms and Conditions link, which can be shared with entities so that their end users accept the terms before proceeding.
+
+Every beneficiary must undergo a KYC/B (Know Your Customer/Business) process for identity verification.
+
+<Note>
+	KYC and KYB may not be available for beneficiaries in specific jurisdictions.
+</Note>
+
+Below are the required data according to the type of beneficiary (individual or business) and the KYC/B level applied:
+
+### KYC/B Standard
+
+| Individual                                                               | Legal Entity                                                                             |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| First Name                                                               | Legal Name                                                                               |
+| Last Name                                                                | Tax ID (or Government-Issued Number)                                                     |
+| Date of Birth                                                            | Incorporation Date                                                                       |
+| Email                                                                    | Email                                                                                    |
+| Country                                                                  | Country                                                                                  |
+| Full Address                                                             | Full Address                                                                             |
+| Postal Code                                                              | Postal Code                                                                              |
+| Tax Identification Number (CPF or Equivalent)                            | Trade Name\*                                                                             |
+| Phone Number\*                                                           | Website\*                                                                                |
+| Identification Document - Country                                        | Documents of Shareholders with More than 20% Ownership (Excluding Phone and IP)          |
+| Identification Document - Type (Passport, National ID, Driver’s License) | Articles of Incorporation                                                                |
+| Identification Document - Front                                          | Proof of Address                                                                         |
+| Identification Document - Back                                           | Company Financial Documents (Balance Sheet, Income Statement, or Recent Bank Statements) |
+| Type of Address Proof (Utility Bill, Bank Statement)                     | --                                                                                       |
+| Address Proof Document\*                                                 | --                                                                                       |
+| Bank Statement\*                                                         |                                                                                          |
+
+\*Fields marked with an asterisk are optional.
+
+### Enhanced KYC/B
+
+Enhanced KYC/B is required only when a customer requests **higher transaction limits** beyond the standard thresholds.\
+This process is conducted directly with our Compliance team and involves a thorough review of additional documentation to ensure alignment with regulatory and risk standards.\
+To initiate the process, please email [**<u>compliance@lumx.io</u>**](mailto:compliance@lumx.io).
+
+**Recommended Email Subject:** \
+**Request for Enhanced KYC/B – Transaction Limit Increase**\
+_(Optionally include your company name for faster identification, e.g. “Request for Enhanced KYC/B – Transaction Limit Increase (Acme Ltd.)”)_
+
+**Estimated Review Time: Up to 5 business days**
+
+Documents that may be requested include:
+
+- **Proof of Source of Funds** (e.g. bank statements, investment records, or sale agreements)
+- **Proof of Source of Wealth** (e.g. income tax returns, salary slips, company dividends)
+- **Business Activity Description** (for legal entities) (e.g. a summary of operations, recent contracts or invoices)
+- **Updated Corporate Documents** (for legal entities) (e.g. shareholder registry, updated financial statements)
+
+These requirements help ensure the secure and compliant handling of higher-volume transactions.
+
+### Transaction limits
+
+|                 | KYC Standard | KYB Standard |
+| :-------------- | :----------- | :----------- |
+| Per transaction | \$10,000     | \$100,000    |
+| Daily           | \$50,000     | \$500,000    |
+| Monthly         | \$100,000    | \$1,000,000  |
+
+<Note>
+	The values indicated above do not represent the transaction limits permitted
+	on the Lumx platform. They are exclusively used to determine which levels of
+	KYC or KYB will be applied according to the intended transaction amounts. In
+	other words, as transaction amounts increase, more stringent verification and
+	compliance levels are required to ensure security and regulatory compliance.
+</Note>
+
+It is emphasized that in cases where the relationship occurs directly between Lumx and the Beneficiary, operational limits will be defined based on the KYB documentation submitted by the entity and may vary from the previously established limits.
+
+### Status progression
+
+KYC/KYB status can progress according to the following flow:
+
+- `not_started` → `under_verification` → `approved`
+
+For low-risk regions, the review process can be completed within seconds. However, in high-risk locations or cases requiring manual review, verification may take **1 to 2 business days**.
+
+In some cases, an entity may be rejected if the submitted information is invalid or inconsistent, such as an incorrect tax identification number or unrecognized documents.
+If this happens, they can **submit the corrected documents again**. The status progression is as follows:
+
+- `not_started` → `under_verification` → `temporary_rejection` → `under_verification` → `approved`
+
+If a customer is fully rejected, the following status order will occur:
+
+- `not_started` → `under_verification` → `final_rejection`
