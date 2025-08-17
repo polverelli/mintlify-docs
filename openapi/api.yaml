@@ -12,6 +12,23 @@ paths:
         - Customers
       summary: Read all customers
       description: This endpoint reads all customers.
+      parameters:
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of customers to return per page.
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Cursor for pagination. Use the nextCursor or previousCursor from the previous response to get the next or previous page.
       responses:
         '200':
           description: Resources successfully retrieved.
@@ -1682,7 +1699,7 @@ components:
           type: string
           description: Exchange rate's target amount.
           example: '10000.000000'
-        timeLock:
+        timelock:
           type: string
           description: Exchange rate's time lock. Default is 30s.
           enum: [30s, 1m, 5m]
