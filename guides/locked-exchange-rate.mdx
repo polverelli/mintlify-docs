@@ -1,32 +1,38 @@
 ---
-title: "Get a Locked Exchange Rate"
-description: "Lock exchange rates for guaranteed conversion rates"
+title: "Use a locked exchange rate"
+description: "Lock a guaranteed FX quote for a fixed time window and use it in on/off-ramp transactions."
 ---
 
-Lock exchange rates for guaranteed conversion during a specific time window.
+A **locked exchange rate** returns a guaranteed FX quote for a limited time window.\
+The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execute the on/off-ramp **before it expires**; attempts after expiry will be rejected. If you don't need guaranteed pricing, use a [**floating exchange rate**](/guides/locked-exchange-rate) instead.
 
-## Process Overview
+---
+
+## Process overview
 
 <Steps>
-  <Step title="Request Locked Rate">
-    Get a guaranteed rate with specified time lock duration
+  <Step title="Request a locked rate">
+    Ask for a guaranteed rate with a specified lock duration.
   </Step>
-  <Step title="Receive Rate ID">
-    Get unique identifier valid for the lock period
+  <Step title="Receive the rate ID">
+    Get `exchangeRateId` plus `expiresAt` (UTC).
   </Step>
-  <Step title="Execute Transaction">
-    Use the rate ID before expiration
+  <Step title="Execute before expiry">
+    Start the on-ramp or off-ramp using the `exchangeRateId`.
   </Step>
-  <Step title="Complete Within Time">
-    Ensure transaction is initiated before rate expires
+  <Step title="Complete the transaction">
+    The transaction settles at the locked rate.
   </Step>
 </Steps>
 
-## How to Create a Locked Exchange Rate
+---
 
-To create a locked exchange rate, use the `/exchange-rates` endpoint with the `locked` type.
+## Create a locked rate
 
-### Request Example
+Call `/exchange-rates` with `"type": "locked"`.\
+You can pass a `partnerFeeId` to bake partner fees into the quote.
+
+### Request example
 
 ```bash
 curl -X POST https://api.lumx.io/exchange-rates \
@@ -42,18 +48,21 @@ curl -X POST https://api.lumx.io/exchange-rates \
   }'
 ```
 
-### Request Parameters
+### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | string | Yes | Must be `"locked"` |
-| `sourceCurrency` | string | Yes | Source currency code (`BRL`, `USDC`, `USDT`) |
-| `sourceAmount` | string | Yes | Amount in source currency |
-| `targetCurrency` | string | Yes | Target currency code (`BRL`, `USDC`, `USDT`) |
-| `targetAmount` | string | Yes | Desired amount in target currency |
-| `timeLock` | string | No | Lock duration: `30s`, `1m`, or `5m` (default: `30s`) |
+| Parameter        | Type     | Required | Description                                                                               |
+| :--------------- | :------- | :------: | :---------------------------------------------------------------------------------------- |
+| `type`           | `string` | Yes      | Must be `"locked"`.                                                                       |
+| `sourceCurrency` | `string` | Yes      | Currency code to convert **from** (e.g., `BRL`, `USDC`, `USDT`).                          |
+| `sourceAmount`   | `string` | Yes      | Amount in `sourceCurrency` (string for decimal precision).                                |
+| `targetCurrency` | `string` | Yes      | Currency code to convert **to** (e.g., `USDC`, `BRL`, `USDT`).                            |
+| `targetAmount`   | `string` | Yes      | Desired amount in the `targetCurrency`.                                                   |
+| `timeLock`       | `string` | No       | Quote validity window: `30s`, `1m`, or `5m`. Default: `30s`.                              |
+| `partnerFeeId`   | `string` | No       | UUID of the partner fee to apply. If omitted and a default exists, that fee will be used. |
 
-### Response Example
+---
+
+## Response
 
 ```json
 {
@@ -84,33 +93,37 @@ curl -X POST https://api.lumx.io/exchange-rates \
 }
 ```
 
-### Response Fields
+### Fields
 
-| Field | Description |
-|-------|-------------|
-| `id` | Unique identifier for the locked rate |
-| `type` | Exchange rate type (`locked`) |
-| `expiresAt` | UTC timestamp when the rate expires |
-| `sourceCurrency` | The currency being converted from |
-| `sourceAmount` | The amount in source currency |
-| `targetCurrency` | The currency being converted to |
-| `baseTargetAmount` | Target amount before fees |
-| `baseExchangeRate` | Base exchange rate before fees |
-| `fees` | Breakdown of all applicable fees |
-| `finalTargetAmount` | Final amount after all fees |
-| `finalExchangeRate` | Effective rate including fees |
+| Field               | Description                                                    |
+| :------------------ | :------------------------------------------------------------- |
+| `id`                | The `exchangeRateId` to use when executing the transaction.    |
+| `type`              | Exchange rate type (`locked`).                                 |
+| `expiresAt`         | UTC timestamp when the locked quote expires.                   |
+| `sourceCurrency`    | Currency being converted from.                                 |
+| `sourceAmount`      | Amount in source currency.                                     |
+| `targetCurrency`    | Currency being converted to.                                   |
+| `baseTargetAmount`  | Target amount **before** fees.                                 |
+| `baseExchangeRate`  | Base FX **before** fees.                                       |
+| `fees`              | Breakdown of Lumx and partner fees (rate in **bps**).          |
+| `finalTargetAmount` | Target amount **after** fees (guaranteed for the lock window). |
+| `finalExchangeRate` | Effective rate **including** fees.                             |
 
-## Time Lock Options
+---
 
-- `30s` - 30 seconds (default)
-- `1m` - 1 minute
-- `5m` - 5 minutes
+## Time lock options
 
-## Using Locked Rates in Transactions
+- `30s` — 30 seconds (default)
+- `1m` — 1 minute
+- `5m` — 5 minutes
 
-Once you have a locked rate ID, use it to execute transactions at the guaranteed rate within the lock window.
+---
 
-### On-Ramp with Locked Rate
+## Use a locked rate in transactions
+
+Pass the `exchangeRateId` when creating the transaction. You **do not** need to include currencies/amounts again; they are derived from the locked quote.
+
+### On-ramp (locked)
 
 ```bash
 curl -X POST https://api.lumx.io/transactions/on-ramp \
@@ -125,7 +138,7 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
   }'
 ```
 
-### Off-Ramp with Locked Rate
+### Off-ramp (locked)
 
 ```bash
 curl -X POST https://api.lumx.io/transactions/off-ramp \
@@ -142,13 +155,15 @@ curl -X POST https://api.lumx.io/transactions/off-ramp \
   }'
 ```
 
-<Note>
-  Both `sourceAmount` and `targetAmount` are required for locked rates.
-  Each rate ID can only be used once and expires after the time lock duration.
-</Note>
+<Warning>
+  Locked quotes are **single-use** and must be executed **before** `expiresAt`.
+</Warning>
 
-## Next Steps
+---
 
-- Learn about [Floating Exchange Rates](/guides/floating-exchange-rate) for real-time rates
-- Configure [Partner Fees](/get-started/partner-fees) for custom fee structures
-- Explore [Transaction Types](/api-reference/transactions/on-ramp) for on-ramp and off-ramp operations
+## Next steps
+
+- Learn about [**Floating Exchange Rates**](/guides/floating-exchange-rate) for guaranteed rates
+- Configure [**Partner Fees**](https://lumx-9fc2c172.mintlify.app/get-started/partner-fees) for custom fee structures
+- Explore [**On-Ramp Transactions**](https://lumx-9fc2c172.mintlify.app/api-reference/transactions/on-ramp) to convert fiat to stablecoins
+- Explore [**Off-Ramp Transactions**](https://lumx-9fc2c172.mintlify.app/api-reference/transactions/off-ramp) to convert stablecoins to fiat

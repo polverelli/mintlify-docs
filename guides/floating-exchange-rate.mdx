@@ -1,53 +1,60 @@
 ---
-title: "Get a Floating Exchange Rate"
-description: "Get real-time exchange rates for currency conversion"
+description: "Request real-time FX between fiat and stablecoins and use it in on/off-ramp transactions"
+title: "Use a floating exchange rate"
 ---
 
-Get real-time exchange rates for currency conversion.
+Use a **floating exchange rate** when you want market-aligned pricing without locking a quote. The effective rate is determined when the on-ramp or off-ramp executes. This keeps integrations simple for flows that can tolerate minor price drift—if you need guaranteed pricing, use a [**locked exchange rate**](/guides/locked-exchange-rate) instead.
 
-## Process Overview
+## Process overview
 
 <Steps>
-  <Step title="Request Quote">
-    Get current exchange rate with source amount and currencies
+  <Step title="Request a rate">
+    Get the current FX between two currencies.
   </Step>
-  <Step title="Review Rate">
-    Check the exchange rate and fee breakdown
+  <Step title="Review the quote">
+    Inspect base rate, fees, and the effective (final) rate.
   </Step>
-  <Step title="Use in Transaction">
-    Apply the floating rate to an on-ramp or off-ramp transaction
+  <Step title="Execute the transaction">
+    Create an on-ramp or off-ramp using currencies/amounts directly (no rate ID).
   </Step>
 </Steps>
 
-## How to Get a Floating Exchange Rate
+---
 
-To get a floating exchange rate quote, use the `/exchange-rates` endpoint with the `floating` type.
+## Request a floating rate
 
-### Request Example
+Use the `/exchange-rates` endpoint with `"type": "floating"`.
 
 ```bash
-curl -X POST https://api.lumx.io/exchange-rates \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+curl -X POST "$LUMX_BASE_URL/exchange-rates" \
+  -H "Authorization: Bearer $LUMX_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "floating",
     "sourceCurrency": "BRL",
     "sourceAmount": "5925.55",
-    "targetCurrency": "USDC"
+    "targetCurrency": "USDC",
+    "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
   }'
 ```
 
-### Request Parameters
+<Info>
+  Each request returns the current best FX and fee breakdown, and the **effective rate is evaluated at the time the transaction executes**.
+</Info>
 
-| Parameter        | Type   | Required | Block Explorers                              |
-| :--------------- | :----- | :------- | :------------------------------------------- |
-| `type`           | string | Yes      | Must be `"floating"`                         |
-| `sourceCurrency` | string | Yes      | Source currency code (`BRL`, `USDC`, `USDT`) |
-| `sourceAmount`   | string | Yes      | Amount to convert in source currency         |
-| `targetCurrency` | string | Yes      | Target currency code (`BRL`, `USDC`, `USDT`) |
-| `partnerFeeId`   | string | No       | UUID of partner fee configuration to apply   |
+### Parameters
 
-### Response Example
+| Parameter        | Type     | Required | Description                                                             |
+| :--------------- | :------- | :------: | :---------------------------------------------------------------------- |
+| `type`           | `string` | Yes      | Must be `"floating"`.                                                   |
+| `sourceCurrency` | `string` | Yes      | Currency code to convert **from** (e.g., `BRL`, `USDC`).                |
+| `sourceAmount`   | `string` | Yes      | Amount in `sourceCurrency` (string for decimal precision).              |
+| `targetCurrency` | `string` | Yes      | Currency code to convert **to** (e.g., `USDC`, `BRL`).                  |
+| `partnerFeeId`   | `string` | No       | Partner fee to apply. If omitted and a default exists, it will be used. |
+
+---
+
+## Response
 
 ```json
 {
@@ -76,25 +83,28 @@ curl -X POST https://api.lumx.io/exchange-rates \
 }
 ```
 
-### Response Fields
+### Fields
 
-| Field               | Description                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `type`              | Exchange rate type (`floating`)                               |
-| `sourceCurrency`    | The currency being converted from                             |
-| `sourceAmount`      | The amount in source currency                                 |
-| `targetCurrency`    | The currency being converted to                               |
-| `baseTargetAmount`  | Target amount before fees                                     |
-| `baseExchangeRate`  | Base exchange rate before fees                                |
-| `fees`              | Breakdown of Lumx and partner fees (if partnerFeeId provided) |
-| `finalTargetAmount` | Final amount after all fees                                   |
-| `finalExchangeRate` | Effective rate including fees                                 |
+| Field               | Description                                                                          |
+| :------------------ | :----------------------------------------------------------------------------------- |
+| `type`              | Exchange rate type (`floating`).                                                     |
+| `sourceCurrency`    | Currency being converted from.                                                       |
+| `sourceAmount`      | Amount in source currency.                                                           |
+| `targetCurrency`    | Currency being converted to.                                                         |
+| `baseTargetAmount`  | Target amount **before** fees.                                                       |
+| `baseExchangeRate`  | Base FX **before** fees.                                                             |
+| `fees.lumx`         | Lumx fees (rate in **bps**, `flatAmount` and `totalAmount` in `fees.lumx.currency`). |
+| `fees.partner`      | Partner fees (if `partnerFeeId` provided or a default fee is configured).            |
+| `finalTargetAmount` | Target amount **after** all fees.                                                    |
+| `finalExchangeRate` | Effective FX **including** fees (derived from `finalTargetAmount / sourceAmount`).   |
 
-## Using Floating Rates in Transactions
+---
 
-When creating on-ramp or off-ramp transactions with floating rates, you specify the currencies and amounts directly without providing an exchange rate ID.
+## Use floating rates in transactions
 
-### On-Ramp with Floating Rate
+You **do not** pass an `exchangeRateId`. The API computes the effective rate when the transaction executes.
+
+### On-ramp (floating)
 
 ```bash
 curl -X POST https://api.lumx.io/transactions/on-ramp \
@@ -112,11 +122,7 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
   }'
 ```
 
-<Note>
-  The `partnerFeeId` is optional. If not provided, default fees apply.
-</Note>
-
-### Off-Ramp with Floating Rate
+### Off-ramp (floating)
 
 ```bash
 curl -X POST https://api.lumx.io/transactions/off-ramp \
@@ -136,9 +142,15 @@ curl -X POST https://api.lumx.io/transactions/off-ramp \
   }'
 ```
 
-## Next Steps
+<Note>
+  The `partnerFeeId` is optional. If not provided, default fees apply.
+</Note>
 
-- Learn about [Locked Exchange Rates](/guides/locked-exchange-rate) for guaranteed rates
-- Configure [Partner Fees](/get-started/partner-fees) for custom fee structures
-- Explore [On-Ramp Transactions](/api-reference/transactions/on-ramp) to convert fiat to stablecoins
-- Review [Off-Ramp Transactions](/api-reference/transactions/off-ramp) to convert stablecoins to fiat
+---
+
+## Next steps
+
+- Learn about [**Locked Exchange Rates**](https://lumx-9fc2c172.mintlify.app/guides/locked-exchange-rate) for guaranteed rates
+- Configure [**Partner Fees**](https://lumx-9fc2c172.mintlify.app/get-started/partner-fees) for custom fee structures
+- Explore [**On-Ramp Transactions**](https://lumx-9fc2c172.mintlify.app/api-reference/transactions/on-ramp) to convert fiat to stablecoins
+- Review [**Off-Ramp Transactions**](https://lumx-9fc2c172.mintlify.app/api-reference/transactions/off-ramp) to convert stablecoins to fiat
