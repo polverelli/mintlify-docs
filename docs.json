@@ -19,7 +19,6 @@
               "get-started/welcome",
               "get-started/authentication",
               "get-started/environments",
-              "get-started/blockchains",
               "get-started/coverage",
               "get-started/troubleshooting"
             ]
@@ -29,7 +28,8 @@
             "pages": [
               "concepts/customers",
               "concepts/exchange-rates",
-              "concepts/transactions"
+              "concepts/transactions",
+              "concepts/partner-fees"
             ]
           },
           {
