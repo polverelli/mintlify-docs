@@ -3,7 +3,7 @@ description: "Request real-time FX rates between fiat and stablecoins and use th
 title: "Use a floating exchange rate"
 ---
 
-Use a **floating exchange rate** when you want market-aligned pricing without locking a quote. The effective rate is determined when the on-ramp or off-ramp executes. This keeps integrations simple for flows that can tolerate minor price drift—if you need guaranteed pricing, use a [**locked exchange rate**](/guides/locked-exchange-rate) instead.
+Use a **floating exchange rate** when you want market-aligned pricing without locking a rate. The effective rate is determined when the on-ramp or off-ramp executes. This keeps integrations simple for flows that can tolerate minor price drift and focus on getting the best possible price—if you need guaranteed pricing, use a [**locked exchange rate**](/guides/locked-exchange-rate) instead.
 
 ## Process overview
 
@@ -25,7 +25,7 @@ Use a **floating exchange rate** when you want market-aligned pricing without lo
 
 Use the `/exchange-rates` endpoint with `"type": "floating"`.
 
-```bash
+```bash Request expandable
 curl --request POST \
   --url https://api.lumx.io/transactions/exchange-rates \
   --header 'Authorization: Bearer <token>' \
@@ -53,11 +53,7 @@ curl --request POST \
 | `targetCurrency` | `string` | Yes      | Currency code to convert **to** (e.g., `USDC`, `BRL`).                  |
 | `partnerFeeId`   | `string` | No       | Partner fee to apply. If omitted and a default exists, it will be used. |
 
----
-
-## Response
-
-```json
+```json Response expandable
 {
   "type": "floating",
   "sourceCurrency": "BRL",
@@ -107,7 +103,7 @@ You **do not** pass an `exchangeRateId`. The API computes the effective rate whe
 
 ### On-ramp (floating)
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/transactions/on-ramp \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -123,9 +119,34 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
   }'
 ```
 
+```bash Response expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "on_ramp",
+  "request": {
+    "sourceCurrency": "BRL",
+    "sourceAmount": "10000.00",
+    "targetCurrency": "USDC",
+    "payment": {
+      "rail": "pix"
+    }
+  },
+  "state": {
+    "status": "awaiting_funds",
+    "payment": {
+      "rail": "pix",
+      "brCode": "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-4266141740005204000053039865802BR5915Test Merchant6009Sao Paulo62070503***63041234"
+    }
+  },
+  "createdAt": "2024-03-20T15:30:00Z",
+  "updatedAt": "2024-03-20T15:30:05Z"
+}
+```
+
 ### Off-ramp (floating)
 
-```bash
+```bash Response expandable
 curl -X POST https://api.lumx.io/transactions/off-ramp \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -141,6 +162,27 @@ curl -X POST https://api.lumx.io/transactions/off-ramp \
     },
     "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
   }'
+```
+
+```bash Response expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "off_ramp",
+  "request": {
+    "sourceCurrency": "USDC",
+    "targetCurrency": "BRL",
+    "amount": "10000.00",
+    "payment": {
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    }
+  },
+  "state": {},
+  "createdAt": "2023-11-07T05:31:56Z",
+  "updatedAt": "2023-11-07T05:31:56Z"
+}
 ```
 
 <Note>

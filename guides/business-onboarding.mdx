@@ -36,7 +36,7 @@ Before starting the onboarding process, ensure you have:
 
 Create a business customer profile with company and beneficiary information.
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/customers \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -100,11 +100,9 @@ Each beneficiary must include:
   Include all beneficiaries with 20%\+ ownership. Each requires KYC documents.
 </Note>
 
-### Response
-
 The response includes the business `customerId`, beneficiary IDs, and a KYB link:
 
-```json
+```json Response expandable
 {
   "id": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
   "type": "business",
@@ -197,7 +195,7 @@ For each beneficiary with 20%\+ ownership:
 
 <CodeGroup>
 
-```bash Articles of Incorporation
+```bash Articles of Incorporation expandable
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F "file=@/path/to/incorporation_articles.pdf" \
@@ -261,7 +259,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
 
 Once all business and beneficiary documents are uploaded, initiate the KYB verification:
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
@@ -274,14 +272,12 @@ curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
 
 Check the verification progress for both the business and its beneficiaries:
 
-```bash
+```bash Request expandable
 curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-### Response Structure
-
-```json
+```json Response expandable
 {
   "customerId": "c85cb5ef-0574-4450-806d-195944f1e309",
   "status": "under_verification",

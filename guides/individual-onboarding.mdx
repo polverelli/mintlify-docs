@@ -32,7 +32,7 @@ Before starting the onboarding process, ensure you have:
 
 Start by creating an individual customer profile with their basic information.
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/customers \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -57,11 +57,9 @@ curl -X POST https://api.lumx.io/customers \
 | `country`   | string | ISO 3166-1 alpha-3 country code | `"BRA"`                             |
 | `email`     | string | Valid email address             | `"john.doe@example.com"`            |
 
-### Response
-
 The response includes a `customerId` and a KYC link:
 
-```json
+```json Response expandable
 {
   "id": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
   "type": "individual",
@@ -112,7 +110,7 @@ Individual customers must provide identity verification and proof of address doc
 
 <CodeGroup>
 
-```bash Passport Upload
+```bash Passport Upload expandable
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F "file=@/path/to/passport.pdf" \
@@ -172,7 +170,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
 
 Once all documents are uploaded, initiate the KYC verification process:
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
@@ -185,14 +183,12 @@ curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
 
 Check the verification progress and results:
 
-```bash
+```bash Request expandable
 curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-### Response Example
-
-```json
+```json Response expandable
 {
   "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
   "status": "not_started",
@@ -229,4 +225,4 @@ curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
 
 ## Next Steps
 
-Learn how to [onboard business customers](/guides/business-onboarding) or move to exchange rates.
+Learn how to [onboard business customers](/guides/business-onboarding) or move to [exchange rates](/guides/floating-exchange-rate).
