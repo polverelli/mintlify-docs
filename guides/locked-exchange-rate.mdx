@@ -1,6 +1,6 @@
 ---
 title: "Use a locked exchange rate"
-description: "Lock a guaranteed FX quote for a fixed time window and use it in on/off-ramp transactions."
+description: "Lock a fixed FX rate for a specific time window and use it in on/off-ramp transactions."
 ---
 
 A **locked exchange rate** returns a guaranteed FX quote for a limited time window.\
@@ -36,8 +36,6 @@ The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execut
 Call `/exchange-rates` with `"type": "locked"`.\
 You can pass a `partnerFeeId` to bake partner fees into the rate.
 
-### Request example
-
 ```bash Request expandable
 curl -X POST https://api.lumx.io/exchange-rates \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -52,7 +50,7 @@ curl -X POST https://api.lumx.io/exchange-rates \
   }'
 ```
 
-### Parameters
+**Parameters**
 
 | Parameter        | Type     | Required | Description                                                                               |
 | :--------------- | :------- | :------: | :---------------------------------------------------------------------------------------- |
@@ -64,11 +62,7 @@ curl -X POST https://api.lumx.io/exchange-rates \
 | `timeLock`       | `string` | No       | Quote validity window: `30s`, `1m`, or `5m`. Default: `30s`.                              |
 | `partnerFeeId`   | `string` | No       | UUID of the partner fee to apply. If omitted and a default exists, that fee will be used. |
 
----
-
-## Response
-
-```json
+```json Response expandable
 {
   "id": "123e4567-e89b-12d3-a456-426614174001",
   "type": "locked",
@@ -97,7 +91,7 @@ curl -X POST https://api.lumx.io/exchange-rates \
 }
 ```
 
-### Fields
+**Fields**
 
 | Field               | Description                                                    |
 | :------------------ | :------------------------------------------------------------- |
@@ -129,22 +123,51 @@ Pass the `exchangeRateId` when creating the transaction. You **do not** need to 
 
 ### On-ramp (locked)
 
-```bash
-curl -X POST https://api.lumx.io/transactions/on-ramp \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "exchangeRateId": "123e4567-e89b-12d3-a456-426614174001",
+```bash Request expandable
+curl --request POST \
+  --url https://api.lumx.io/transactions/on-ramp \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "sourceCurrency": "BRL",
+  "sourceAmount": "10000.00",
+  "targetCurrency": "USDC",
+  "payment": {
+    "rail": "pix"
+  },
+  "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+}'
+```
+
+```bash Response expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "on_ramp",
+  "request": {
+    "sourceCurrency": "BRL",
+    "sourceAmount": "10000.00",
+    "targetCurrency": "USDC",
     "payment": {
       "rail": "pix"
     }
-  }'
+  },
+  "state": {
+    "status": "awaiting_funds",
+    "payment": {
+      "rail": "pix",
+      "brCode": "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-4266141740005204000053039865802BR5915Test Merchant6009Sao Paulo62070503***63041234"
+    }
+  },
+  "createdAt": "2024-03-20T15:30:00Z",
+  "updatedAt": "2024-03-20T15:30:05Z"
+}
 ```
 
 ### Off-ramp (locked)
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/transactions/off-ramp \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -157,6 +180,27 @@ curl -X POST https://api.lumx.io/transactions/off-ramp \
       "keyValue": "123.456.789-00"
     }
   }'
+```
+
+```bash Response expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "off_ramp",
+  "request": {
+    "sourceCurrency": "USDC",
+    "targetCurrency": "BRL",
+    "amount": "10000.00",
+    "payment": {
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    }
+  },
+  "state": {},
+  "createdAt": "2023-11-07T05:31:56Z",
+  "updatedAt": "2023-11-07T05:31:56Z"
+}
 ```
 
 <Warning>
