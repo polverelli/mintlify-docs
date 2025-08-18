@@ -1,6 +1,5 @@
 ---
 title: "Exchange Rates"
-description: "Concepts behind floating and locked rates and how to use them"
 ---
 
 ## Overview
@@ -120,7 +119,7 @@ A rate response (floating or locked) provides:
 
 - `rate_expired` — The locked quote expired before execution. Request a new locked rate or switch to floating.
 - `invalid_exchangeRateId` — The ID is unknown or already used (locked quotes are single-use).
-- `unsupported_pair`\*\*/ \*\* `amount_out_of_range` — The currency pair or size isn’t currently quotable; adjust inputs.
+- `unsupported_pair`/ `amount_out_of_range` — The currency pair or size isn’t currently quotable; adjust inputs.
 
 For transaction-level errors (e.g., payment/funding expiry, invalid payout details), see the specific guides:
 
