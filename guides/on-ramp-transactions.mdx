@@ -279,6 +279,17 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
 
 ---
 
+### On-ramp states
+
+| Field            | Description                                                                                            |
+| :--------------- | :----------------------------------------------------------------------------------------------------- |
+| `awaiting_funds` | Waiting for the customer’s payment on the selected rail; see `state.payment.*` (e.g., `brCode`).       |
+| `processing`     | Payment confirmed; conversion and delivery in progress.                                                |
+| `success`        | Stablecoin delivered; `state.receipt.*` (rate/amount/fees) and, when applicable, `state.blockchain.*`. |
+| `failed`         | Transaction failed/expired; check `state.error` if present.                                            |
+
+---
+
 ### Transaction Monitoring
 
 Once we receive the deposit for your transaction, we will move the funds to the destination. You can use the API to check the state of the transaction or listen to webhooks.

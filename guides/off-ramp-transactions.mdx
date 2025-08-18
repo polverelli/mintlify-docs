@@ -42,36 +42,42 @@ Refer to [supported currencies, blockchains, and rails.](get-started/coverage)
 
 ---
 
-## Creating an On-Ramp Transaction
+## Creating an Off-Ramp Transaction
 
 ### Option 1: Floating Rate
 
 Use current market rates determined at execution time:
 
 ```bash Request expandable
-curl -X POST https://api.lumx.io/transactions/on-ramp \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "sourceCurrency": "BRL",
-    "sourceAmount": "10000.00",
-    "targetCurrency": "USDC",
-    "payment": { "rail": "pix" },
-    "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
-  }'
+curl --request POST \
+  --url https://api.lumx.io/transactions/off-ramp \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "customerId": "123e4567-e89b-12d3-a456-426614174000",
+  "sourceCurrency": "USDC",
+  "sourceAmount": "10000.00",
+  "targetCurrency": "BRL",
+  "payment": {
+    "rail": "pix",
+    "keyType": "cpf",
+    "keyValue": "123.456.789-00"
+  },
+  "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+}'
 ```
 
 **Parameters**
 
-| Parameter        | Type   | Required | Description                                                       |
-| :--------------- | :----- | :------- | :---------------------------------------------------------------- |
-| `customerId`     | string | Yes      | UUID of the verified customer                                     |
-| `sourceCurrency` | string | Yes      | **Fiat** ISO code (e.g., `BRL`)                                   |
-| `sourceAmount`   | string | Yes      | Amount in `sourceCurrency`                                        |
-| `targetCurrency` | string | Yes      | Asset code (e.g., `USDC`, `USDT`, or other supported stablecoins) |
-| `payment.rail`   | string | Yes      | Payment rail (e.g., `pix`)                                        |
-| `partnerFeeId`   | string | No       | Optional partner fee configuration                                |
+| Parameter        | Type   | Required | Description                                                                  |
+| :--------------- | :----- | :------- | :--------------------------------------------------------------------------- |
+| `customerId`     | string | Yes      | UUID of the verified customer                                                |
+| `sourceCurrency` | string | Yes      | **Asset** code (e.g., `USDC`, `USDT`, or another supported token)            |
+| `sourceAmount`   | string | Yes      | Amount in `sourceCurrency`                                                   |
+| `targetCurrency` | string | Yes      | **Fiat** ISO code (e.g., `BRL`)                                              |
+| `payment.rail`   | string | Yes      | Payout rail (e.g., `pix`)                                                    |
+| `payment.*`      | mixed  | Yes      | Rail-specific payout fields (e.g., Pix `keyType`/`keyValue`, SEPA IBAN, etc) |
+| `partnerFeeId`   | string | No       | Optional partner fee configuration                                           |
 
 <Info>
   **Note:** Currencies and rails above are **examples only**. Your integration can use other supported currencies/assets/rails without changing the schema.
@@ -83,24 +89,31 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
 
 Use a pre-locked exchange rate for guaranteed conversion:
 
-```bash Request
-curl -X POST https://api.lumx.io/transactions/on-ramp \
+```bash Request expandable
+curl -X POST https://api.lumx.io/transactions/off-ramp \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
     "exchangeRateId": "123e4567-e89b-12d3-a456-426614174000",
-    "payment": { "rail": "pix" }
-  }'
+    "payment": {
+    "rail": "pix",
+    "keyType": "cpf",
+    "keyValue": "123.456.789-00"
+  },
+  "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+}'
 ```
 
 **Parameters**
 
-| Parameter        | Type   | Required | Description                                             |
-| :--------------- | :----- | :------- | :------------------------------------------------------ |
-| `customerId`     | string | Yes      | UUID of the verified customer                           |
-| `exchangeRateId` | string | Yes      | ID of the locked exchange rate (use before `expiresAt`) |
-| `payment.rail`   | string | Yes      | Payment rail (e.g., `pix`)                              |
+| Parameter        | Type   | Required | Description                                                                  |
+| :--------------- | :----- | :------- | :--------------------------------------------------------------------------- |
+| `customerId`     | string | Yes      | UUID of the verified customer                                                |
+| `exchangeRateId` | string | Yes      | ID of the locked exchange rate (use before `expiresAt`)                      |
+| `payment.rail`   | string | Yes      | Payout rail (e.g., `pix`)                                                    |
+| `payment.*`      | mixed  | Yes      | Rail-specific payout fields (e.g., Pix `keyType`/`keyValue`, SEPA IBAN, etc) |
+| `partnerFeeId`   | string | No       | Optional partner fee configuration                                           |
 
 <Info>
   When using `exchangeRateId`, you don’t need to input currencies/amounts; they’re derived from the locked rate you got earlier. Attempts after expiry will be rejected.
@@ -108,53 +121,84 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
 
 ```json Response expandable
 {
-  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "id": "123e4567-e89b-12d3-a456-426614174003",
   "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-  "type": "on_ramp",
+  "type": "off_ramp",
   "request": {
     "sourceCurrency": "BRL",
     "sourceAmount": "10000.00",
-    "targetCurrency": "USDC",
-    "payment": { "rail": "pix" }
+    "targetCurrency": "BRL",
+    "payment": {
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    }
   },
   "state": {
     "status": "awaiting_funds",
     "payment": {
-      "rail": "pix",
-      "brCode": "0002012658...6304ABCD"
+      "rail": "pix"
     }
   },
-  "createdAt": "2025-08-18T15:30:00Z",
-  "updatedAt": "2025-08-18T15:30:05Z"
+  "createdAt": "2024-03-20T15:30:00Z",
+  "updatedAt": "2024-03-20T15:30:05Z"
 }
 ```
 
-**Other On-Ramp Statuses**
+**Other Off-Ramp Statuses**
 
 <CodeGroup>
 
 ```json processing expandable
 {
-  "id": "123e4567-e89b-12d3-a456-426614174002",
+  "id": "123e4567-e89b-12d3-a456-426614174003",
   "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
   "type": "on_ramp",
   "request": {
     "sourceCurrency": "BRL",
     "sourceAmount": "10000.00",
-    "targetCurrency": "USDC",
+    "targetCurrency": "BRL",
     "payment": {
-      "rail": "pix"
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
     }
   },
   "state": {
     "status": "processing",
     "payment": {
+      "rail": "pix"
+    }
+  },
+  "createdAt": "2024-03-20T15:30:00Z",
+  "updatedAt": "2024-03-20T15:30:05Z"
+}
+```
+
+
+```json success expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174003",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "off_ramp",
+  "request": {
+    "sourceCurrency": "BRL",
+    "sourceAmount": "10000.00",
+    "targetCurrency": "BRL",
+    "payment": {
       "rail": "pix",
-      "brCode": "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-4266141740005204000053039865802BR5915Test Merchant6009Sao Paulo62070503***63041234"
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
+    }
+  },
+  "state": {
+    "status": "success",
+    "payment": {
+      "rail": "pix"
     },
     "receipt": {
       "rate": "6.0066",
-      "sourceAmount": "1000.000000",
+      "sourceAmount": "1000.00",
       "targetAmount": "5925.55",
       "sourceCurrency": "USDC",
       "targetCurrency": "BRL",
@@ -181,70 +225,25 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
 ```
 
 
-```json success expandable
-{
-  "id": "123e4567-e89b-12d3-a456-426614174002",
-  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-  "type": "on_ramp",
-  "request": {
-    "sourceCurrency": "BRL",
-    "sourceAmount": "10000.00",
-    "targetCurrency": "USDC",
-    "payment": { "rail": "pix" }
-  },
-  "state": {
-    "status": "success",
-    "payment": {
-      "rail": "pix",
-      "brCode": "0002012658...6304ABCD"
-    },
-    "receipt": {
-      "rate": "6.0066",
-      "sourceAmount": "10000.00",
-      "targetAmount": "1664.44",
-      "sourceCurrency": "BRL",
-      "targetCurrency": "USDC",
-      "fees": {
-        "currency": "USDC",
-        "lumx": {
-          "percentage": "10.000000",
-          "flat": "1"
-        },
-        "developer": {
-          "percentage": "0.000000",
-          "flat": "0"
-        }
-      }
-    },
-    "blockchain": {
-      "transactionHash": "0x1234567890123456789012345678901234567890",
-      "blockExplorerUrl": "https://polygonscan.com/tx/0x1234567890123456789012345678901234567890"
-    }
-  },
-  "createdAt": "2025-08-18T15:30:00Z",
-  "updatedAt": "2025-08-18T15:35:00Z"
-}
-```
-
-
 ```json failed expandable
 {
-  "id": "123e4567-e89b-12d3-a456-426614174002",
+  "id": "123e4567-e89b-12d3-a456-426614174003",
   "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-  "type": "on_ramp",
+  "type": "off_ramp",
   "request": {
     "sourceCurrency": "BRL",
     "sourceAmount": "10000.00",
-    "targetCurrency": "USDC",
+    "targetCurrency": "BRL",
     "payment": {
-      "rail": "pix"
+      "rail": "pix",
+      "keyType": "cpf",
+      "keyValue": "123.456.789-00"
     }
   },
   "state": {
     "status": "failed",
     "payment": {
-      "rail": "pix",
-      "brCode": "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-4266141740005204000053039865802BR5915Test Merchant6009Sao Paulo62070503***63041234"
+      "rail": "pix"
     },
     "error": {}
   },
@@ -257,23 +256,33 @@ curl -X POST https://api.lumx.io/transactions/on-ramp \
 
 **Key Response Fields**
 
-| Field                               | Description                                                                                     | Present when                |
-| :---------------------------------- | :---------------------------------------------------------------------------------------------- | :-------------------------- |
-| `id`                                | Unique transaction identifier                                                                   | all statuses                |
-| `customerId`                        | Customer identifier                                                                             | all statuses                |
-| `state.status`                      | Current status: `awaiting_funds` → `processing` → `success` / `failed`                          | all statuses                |
-| `state.payment.rail`                | Payment rail used for funding (e.g., `pix`, `sepa`, `ach`, `wire`)                              | `awaiting_funds`, `success` |
-| `state.payment.brCode`              | Rail-specific payment data (e.g., Pix Copia e Cola / QR content)                                | `awaiting_funds`            |
-| `state.payment.expiresAt`           | Payment time limit for the rail (if applicable)                                                 | `awaiting_funds`            |
-| `state.receipt.*`                   | Conversion breakdown after settlement: `rate`, `sourceAmount`, `targetAmount`, currencies, fees | `success`                   |
-| `state.receipt.fees.lumx.*`         | Lumx fee components (e.g., `rate`, `flat`, `currency`)                                          | `success`                   |
-| `state.receipt.fees.partner.*`      | Partner fee components (if configured)                                                          | `success`                   |
-| `state.blockchain.transactionHash`  | Hash of the on-chain delivery transaction                                                       | `success`                   |
-| `state.blockchain.blockExplorerUrl` | Link to view the on-chain transaction                                                           | `success`                   |
+| Field                               | Description                                                                                     | Present when |
+| :---------------------------------- | :---------------------------------------------------------------------------------------------- | :----------- |
+| `id`                                | Unique transaction identifier                                                                   | all statuses |
+| `customerId`                        | Customer identifier                                                                             | all statuses |
+| `state.status`                      | Current status: `awaiting_funds` → `processing` → `success` / `failed`                          | all statuses |
+| `request.payment.rail`              | Payout rail (e.g., `pix`)                                                                       | all statuses |
+| `request.payment.*`                 | Rail-specific payout fields (e.g., Pix `keyType`/`keyValue`)                                    | all statuses |
+| `state.receipt.*`                   | Conversion breakdown after settlement: `rate`, `sourceAmount`, `targetAmount`, currencies, fees | `success`    |
+| `state.receipt.fees.lumx.*`         | Lumx fee components (e.g., `rate`, `flat`, `currency`)                                          | `success`    |
+| `state.receipt.fees.partner.*`      | Partner fee components (if configured)                                                          | `success`    |
+| `state.blockchain.transactionHash`  | Hash of the on-chain delivery transaction                                                       | `success`    |
+| `state.blockchain.blockExplorerUrl` | Link to view the on-chain transaction                                                           | `success`    |
 
 <Info>
   Field availability is status-dependent. For locked quotes, ensure the transaction is created and funded **before** the rate’s `expiresAt`; otherwise, the transaction will be rejected or end up as `failed`.
 </Info>
+
+---
+
+### Off-ramp states
+
+| Field            | Description                                                     |
+| :--------------- | :-------------------------------------------------------------- |
+| `awaiting_funds` | Waiting for on-chain funding of the source stablecoin.          |
+| `processing`     | Funding confirmed; conversion and fiat payout in progress.      |
+| `success`        | Fiat settled on the selected rail; `state.receipt.*` available. |
+| `failed`         | Transaction failed/expired; check `state.error` if present.     |
 
 ---
 
@@ -287,4 +296,4 @@ Once we receive the deposit for your transaction, we will move the funds to the 
 
 - Learn about [**Exchange Rates**](/guides/floating-exchange-rate) for guaranteed rates
 - Configure [**Partner Fees**](/concepts/partner-fees) for custom fee structures
-- Explore [**On-Ramp Transactions**](/guides/on-ramp-transactions) to convert stablecoins to fiat
+- Explore [**On-Ramp Transactions**](/guides/on-ramp-transactions) to convert fiat to stablecoins

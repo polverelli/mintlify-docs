@@ -1,142 +1,118 @@
 ---
 title: "Create a Transfer Transaction"
-description: "Send stablecoins between customers or to external wallets"
+description: "Transfer stablecoins between customers or external wallets"
 ---
 
-Send stablecoins (USDC or USDT) between Lumx customers or to external wallets.
+## Overview
+
+A **transfer** moves a **stablecoin** from one customer to another, or from a customer to an **external wallet**. Use any **supported stablecoin** and **supported blockchain** configured for your account.
+
+---
 
 ## Prerequisites
 
 Before initiating a transfer:
 
-1. **Verified Sender**: Sending customer must be KYC-approved
-2. **Sufficient Balance**: Sender must have enough stablecoins
-3. **Valid Recipient**: Either a Lumx customer ID or valid blockchain address
+1. **Verified Sender (Customer)** — Customer must be KYC-approved ([see onboarding](/guides/business-onboarding)).
+2. **Sufficient Balance** — The sender must hold enough of the selected stablecoin.
+3. **Valid Recipient** — Provide either a Lumx `customerId` or a valid**external wallet address**  (per the selected stablecoin/blockchain).
 
-## Transaction Flow
+Refer to [supported stablecoins and blockchains](get-started/coverage).
+
+---
+
+## Transaction Overview
 
 <Steps>
   <Step title="Initiate Transfer">
-    Submit transfer request with amount and recipient
+    Create the transfer with **currency**, **amount**, and **recipient** (customerId or wallet address).
   </Step>
-  <Step title="Balance Verification">
-    System verifies sender has sufficient funds
+  <Step title="Balance and Recipient Verification">
+    We verify if the sender has enough balance and perform compliance checks on the recipient's wallet.
   </Step>
-  <Step title="Blockchain Transaction">
-    Execute on-chain transfer
-  </Step>
-  <Step title="Confirmation">
-    Transaction confirmed on blockchain
+  <Step title="Stablecoin Transfer">
+    The target stablecoin is sent to the recipient's wallet.
   </Step>
   <Step title="Balance Updates">
-    Update sender and recipient balances
+    Sender is debited and recipient is credited; history is updated.
   </Step>
 </Steps>
 
-## Creating a Transfer Transaction
+---
 
-### Transfer to Another Customer
+## Creating a Transfer
 
-Send stablecoins to another verified Lumx customer:
+### Transfer to another customer
 
-```bash
-curl -X POST https://api.lumx.io/transactions/transfer \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "currency": "USDC",
-    "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "to": "980dc26b-42fd-4044-8a42-2271d20a2eb9",
-    "amount": "1000.000000"
-  }'
+```bash Request expandable
+curl --request POST \
+  --url https://api.lumx.io/transactions/transfer \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "currency": "USDC",
+  "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "to": "980dc26b-42fd-4044-8a42-2271d20a2eb9",
+  "amount": "10000.000000"
+}'
 ```
 
-### Transfer to External Wallet
+### Transfer to an external wallet
 
-Send stablecoins to any blockchain address:
-
-```bash
-curl -X POST https://api.lumx.io/transactions/transfer \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "currency": "USDT",
-    "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1",
-    "amount": "500.000000"
-  }'
+```bash Request expandable
+curl --request POST \
+  --url https://api.lumx.io/transactions/transfer \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "currency": "USDC",
+  "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1",
+  "amount": "10000.000000"
+}'
 ```
 
-## Request Parameters
+**Parameters**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `currency` | string | Yes | `"USDC"` or `"USDT"` |
-| `from` | string | Yes | Sender's customer UUID |
-| `to` | string | Yes | Recipient customer UUID or wallet address |
-| `amount` | string | Yes | Amount to transfer (6 decimal precision) |
+| Parameter  | Type   | Required | Description                                                        |
+| :--------- | :----- | :------- | :----------------------------------------------------------------- |
+| `currency` | string | Yes      | Asset code (e.g., `USDC`, `USDT`, or another supported token)      |
+| `from`     | string | Yes      | Sender’s `customerId`                                              |
+| `to`       | string | Yes      | Recipient `customerId` or **external wallet address**              |
+| `amount`   | string | Yes      | Transfer amount (supports up to 6 decimals, e.g., `"1000.123456"`) |
 
-<Note>
-  Stablecoin amounts support up to 6 decimal places (e.g., "1000.123456")
-</Note>
-
-## Transaction Response
-
-### Initial Response (Processing)
-
-```json
+```json Response expandable
 {
-  "id": "123e4567-e89b-12d3-a456-426614174004",
-  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-  "type": "transfer",
-  "request": {
-    "currency": "USDC",
-    "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "to": "980dc26b-42fd-4044-8a42-2271d20a2eb9",
-    "amount": "1000.000000"
-  },
-  "state": {
-    "status": "processing"
-  },
-  "createdAt": "2024-03-20T15:30:00Z",
-  "updatedAt": "2024-03-20T15:30:00Z"
+  "value": {
+    "id": "123e4567-e89b-12d3-a456-426614174004",
+    "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+    "type": "transfer",
+    "request": {
+      "currency": "USDC",
+      "from": "123e4567-e89b-12d3-a456-426614174001",
+      "to": "123e4567-e89b-12d3-a456-426614174002",
+      "amount": "1000.000000"
+    },
+    "state": {
+      "status": "processing"
+    }
+  }
 }
 ```
 
-## Transaction Status Monitoring
+**Other Transfer Statuses**
 
-Check transfer status:
+<CodeGroup>
 
-```bash
-curl -X GET https://api.lumx.io/transactions/{transactionId} \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-### Transaction Statuses
-
-<CardGroup cols={2}>
-  <Card title="processing" icon="spinner" color="#yellow">
-    Transaction being processed on blockchain
-  </Card>
-  <Card title="success" icon="circle-check" color="#green">
-    Transfer confirmed on blockchain
-  </Card>
-  <Card title="failed" icon="circle-xmark" color="#red">
-    Transfer failed (insufficient funds, etc.)
-  </Card>
-</CardGroup>
-
-### Success Response
-
-```json
+```json success expandable
 {
   "id": "123e4567-e89b-12d3-a456-426614174004",
   "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
   "type": "transfer",
   "request": {
     "currency": "USDC",
-    "from": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
-    "to": "980dc26b-42fd-4044-8a42-2271d20a2eb9",
+    "from": "123e4567-e89b-12d3-a456-426614174001",
+    "to": "123e4567-e89b-12d3-a456-426614174002",
     "amount": "1000.000000"
   },
   "state": {
@@ -145,57 +121,62 @@ curl -X GET https://api.lumx.io/transactions/{transactionId} \
       "transactionHash": "0x1234567890123456789012345678901234567890",
       "blockExplorerUrl": "https://amoy.polygonscan.com/tx/0x1234567890123456789012345678901234567890"
     }
-  },
-  "createdAt": "2024-03-20T15:30:00Z",
-  "updatedAt": "2024-03-20T15:30:15Z"
+  }
 }
 ```
 
-## Blockchain Verification
 
-All transfers are recorded on the blockchain:
+```json failed expandable
+{
+  "id": "123e4567-e89b-12d3-a456-426614174004",
+  "customerId": "3c90c3cc-0d44-4b50-8888-8dd25736052a",
+  "type": "transfer",
+  "request": {
+    "currency": "USDC",
+    "from": "123e4567-e89b-12d3-a456-426614174001",
+    "to": "123e4567-e89b-12d3-a456-426614174002",
+    "amount": "1000.000000"
+  },
+  "state": {
+    "status": "failed",
+    "error": {}
+  }
+}
+```
 
-| Field | Description |
-|-------|-------------|
-| `transactionHash` | Unique blockchain transaction identifier |
-| `blockExplorerUrl` | Direct link to view transaction details |
+</CodeGroup>
 
-You can verify:
-- Transaction amount and currency
-- Sender and recipient addresses
-- Block confirmation
-- Gas fees (paid by Lumx)
+**Key Response Fields**
 
+| Field                               | Description                              | Present when |
+| :---------------------------------- | :--------------------------------------- | :----------- |
+| `id`                                | Unique transaction identifier            | all statuses |
+| `customerId`                        | Originating (sender) customer identifier | all statuses |
+| `state.status`                      | `processing` \| `success` \| `failed`    | all statuses |
+| `state.blockchain.transactionHash`  | On-chain transaction hash                | `success`    |
+| `state.blockchain.blockExplorerUrl` | Link to view the on-chain transaction    | `success`    |
+| `state.error`                       | Error details (if any)                   | `failed`     |
 
-## Next Steps
+---
 
-<CardGroup cols={3}>
-  <Card 
-    title="On-Ramp Guide" 
-    icon="money-bill-transfer" 
-    href="/guides/on-ramp-transactions"
-  >
-    Fund customer wallets
-  </Card>
-  <Card 
-    title="Off-Ramp Guide" 
-    icon="bank" 
-    href="/guides/off-ramp-transactions"
-  >
-    Withdraw to bank accounts
-  </Card>
-  <Card 
-    title="Webhooks" 
-    icon="webhook" 
-    href="/get-started/webhooks"
-  >
-    Real-time transaction updates
-  </Card>
-</CardGroup>
+### Transfer states
 
-## Related Resources
+| Field        | Description                                                   |
+| :----------- | :------------------------------------------------------------ |
+| `processing` | The transfer is being processed on-chain                      |
+| `success`    | Transfer confirmed on-chain; balances updated.                |
+| `failed`     | Transfer failed (e.g., insufficient funds or invalid address) |
 
-- [Customer Balances](/api-reference/customers/read-a-customer)
-- [Transaction History](/api-reference/transactions/read-all-transactions)
-- [Blockchain Networks](/get-started/blockchains)
-- [API Reference](/api-reference/transactions/transfer)
+---
+
+### Transaction Monitoring
+
+Once we receive the deposit for your transaction, we will move the funds to the destination. You can use the API to check the state of the transaction or listen to webhooks.
+
+---
+
+## Next steps
+
+- Learn about [**Exchange Rates**](/guides/floating-exchange-rate) for guaranteed rates
+- Configure [**Partner Fees**](/concepts/partner-fees) for custom fee structures
+- Explore [On-ramp](/guides/on-ramp-transactions) and [**Off-Ramp**](/guides/off-ramp-transactions)** **Transactions to convert between stablecoins and fiat
