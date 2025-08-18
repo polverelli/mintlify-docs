@@ -39,13 +39,13 @@ curl -X POST https://api.lumx.io/exchange-rates \
 
 ### Request Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | string | Yes | Must be `"floating"` |
-| `sourceCurrency` | string | Yes | Source currency code (`BRL`, `USDC`, `USDT`) |
-| `sourceAmount` | string | Yes | Amount to convert in source currency |
-| `targetCurrency` | string | Yes | Target currency code (`BRL`, `USDC`, `USDT`) |
-| `partnerFeeId` | string | No | UUID of partner fee configuration to apply |
+| Parameter        | Type   | Required | Block Explorers                              |
+| :--------------- | :----- | :------- | :------------------------------------------- |
+| `type`           | string | Yes      | Must be `"floating"`                         |
+| `sourceCurrency` | string | Yes      | Source currency code (`BRL`, `USDC`, `USDT`) |
+| `sourceAmount`   | string | Yes      | Amount to convert in source currency         |
+| `targetCurrency` | string | Yes      | Target currency code (`BRL`, `USDC`, `USDT`) |
+| `partnerFeeId`   | string | No       | UUID of partner fee configuration to apply   |
 
 ### Response Example
 
@@ -78,17 +78,17 @@ curl -X POST https://api.lumx.io/exchange-rates \
 
 ### Response Fields
 
-| Field | Description |
-|-------|-------------|
-| `type` | Exchange rate type (`floating`) |
-| `sourceCurrency` | The currency being converted from |
-| `sourceAmount` | The amount in source currency |
-| `targetCurrency` | The currency being converted to |
-| `baseTargetAmount` | Target amount before fees |
-| `baseExchangeRate` | Base exchange rate before fees |
-| `fees` | Breakdown of Lumx and partner fees (if partnerFeeId provided) |
-| `finalTargetAmount` | Final amount after all fees |
-| `finalExchangeRate` | Effective rate including fees |
+| Field               | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `type`              | Exchange rate type (`floating`)                               |
+| `sourceCurrency`    | The currency being converted from                             |
+| `sourceAmount`      | The amount in source currency                                 |
+| `targetCurrency`    | The currency being converted to                               |
+| `baseTargetAmount`  | Target amount before fees                                     |
+| `baseExchangeRate`  | Base exchange rate before fees                                |
+| `fees`              | Breakdown of Lumx and partner fees (if partnerFeeId provided) |
+| `finalTargetAmount` | Final amount after all fees                                   |
+| `finalExchangeRate` | Effective rate including fees                                 |
 
 ## Using Floating Rates in Transactions
 
@@ -135,7 +135,6 @@ curl -X POST https://api.lumx.io/transactions/off-ramp \
     "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
   }'
 ```
-
 
 ## Next Steps
 

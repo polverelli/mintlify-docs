@@ -3,35 +3,24 @@ title: "Onboarding an Individual Customer"
 description: "Complete guide to onboard individual customers through KYC verification"
 ---
 
-Onboard individual customers with KYC verification to enable transactions on the Lumx platform.
-
-<Tabs>
-  <Tab title="Individual">
-    
-  </Tab>
-  <Tab title="Business">
-    
-  </Tab>
-</Tabs>
-
 ## Prerequisites
 
 Before starting the onboarding process, ensure you have:
 
 - API credentials ([Get your API key](/get-started/authentication))
-- Customer's personal information ready
+- Customer's personal information
 - Required documents in digital format (PDF, PNG, or JPEG)
 
-## Onboarding Process
+## Process overview
 
 <Steps>
   <Step title="Create Customer Profile">
-    Add customer's basic information to the system
+    Add the customer’s basic information
   </Step>
   <Step title="Upload Documents">
     Submit identity and proof of address documents
   </Step>
-  <Step title="Start Verification">
+  <Step title="Start Verification" stepNumber={3}>
     Initiate the KYC verification process
   </Step>
   <Step title="Monitor Status">
@@ -236,18 +225,8 @@ curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
 | `temporary_rejection` | Documents need to be resubmitted                 |
 | `final_rejection`     | Customer was not approved                        |
 
+---
+
 ## Next Steps
 
-After successful individual customer onboarding:
-
-<CardGroup cols={3}>
-  <Card title="Add Funds" icon="money-bill-transfer" href="/api-reference/transactions/on-ramp">
-    Convert fiat to stablecoins
-  </Card>
-  <Card title="Make Transfers" icon="arrows-rotate" href="/api-reference/transactions/transfer">
-    Send funds between customers
-  </Card>
-  <Card title="Withdraw Funds" icon="bank" href="/api-reference/transactions/off-ramp">
-    Convert stablecoins to fiat
-  </Card>
-</CardGroup>
+Learn how to [onboard business customers](/guides/business-onboarding) or move to exchange rates.

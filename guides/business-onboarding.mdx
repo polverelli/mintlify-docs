@@ -1,9 +1,7 @@
 ---
-title: 'Onboarding a Business Customer'
-description: 'Complete guide to onboard business customers through KYB verification'
+title: "Onboarding a Business Customer"
+description: "Complete guide to onboard business customers through KYB verification"
 ---
-
-Onboard business customers with KYB verification to enable corporate transactions.
 
 ## Prerequisites
 
@@ -11,10 +9,10 @@ Before starting the onboarding process, ensure you have:
 
 - API credentials ([Get your API key](/get-started/authentication))
 - Business legal information and documentation
-- Beneficiary information (for owners with 20%+ shares)
+- Beneficiary information (for owners with 20%\+ shares)
 - Required documents in digital format (PDF, PNG, or JPEG)
 
-## Onboarding Process
+## Process overview
 
 <Steps>
   <Step title="Create Business Profile">
@@ -24,7 +22,7 @@ Before starting the onboarding process, ensure you have:
     Submit incorporation and business proof of address
   </Step>
   <Step title="Upload Beneficiary Documents">
-    Submit KYC documents for each 20%+ owner
+    Submit KYC documents for each 20%\+ owner
   </Step>
   <Step title="Start KYB Verification">
     Initiate the business verification process
@@ -37,8 +35,6 @@ Before starting the onboarding process, ensure you have:
 ## Step 1: Create a Business Customer
 
 Create a business customer profile with company and beneficiary information.
-
-### API Request Example
 
 ```bash
 curl -X POST https://api.lumx.io/customers \
@@ -76,37 +72,37 @@ curl -X POST https://api.lumx.io/customers \
 
 ### Required Fields
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `type` | string | Must be `"business"` | `"business"` |
-| `legalName` | string | Company's legal registered name | `"Acme Corporation"` |
-| `taxId` | string | Valid business tax ID | `"12.345.678/0001-00"` (CNPJ for Brazil) |
-| `incorporationDate` | string | Date of incorporation (YYYY-MM-DD) | `"2020-01-01"` |
-| `country` | string | ISO 3166-1 alpha-3 country code | `"BRA"` |
-| `email` | string | Business contact email | `"contact@acme.com"` |
-| `beneficiaries` | array | List of beneficiaries with 20%+ ownership | See beneficiary structure below |
+| Field               | Type   | Description                                | Example                                  |
+| ------------------- | ------ | ------------------------------------------ | ---------------------------------------- |
+| `type`              | string | Must be `"business"`                       | `"business"`                             |
+| `legalName`         | string | Company's legal registered name            | `"Acme Corporation"`                     |
+| `taxId`             | string | Valid business tax ID                      | `"12.345.678/0001-00"` (CNPJ for Brazil) |
+| `incorporationDate` | string | Date of incorporation (YYYY-MM-DD)         | `"2020-01-01"`                           |
+| `country`           | string | ISO 3166-1 alpha-3 country code            | `"BRA"`                                  |
+| `email`             | string | Business contact email                     | `"contact@acme.com"`                     |
+| `beneficiaries`     | array  | List of beneficiaries with 20%\+ ownership | See beneficiary structure below          |
 
 ### Beneficiary Structure
 
 Each beneficiary must include:
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `type` | string | Must be `"individual"` | `"individual"` |
-| `name` | string | Beneficiary's full legal name | `"Jane Smith"` |
-| `taxId` | string | Beneficiary's personal tax ID | `"987.654.321-00"` |
-| `birthDate` | string | Date of birth (YYYY-MM-DD) | `"1985-05-15"` |
-| `country` | string | ISO 3166-1 alpha-3 country code | `"BRA"` |
-| `email` | string | Beneficiary's email | `"jane@acme.com"` |
-| `sharePercentage` | number | Ownership percentage (must be ≥20) | `30` |
+| Field             | Type   | Description                        | Example            |
+| ----------------- | ------ | ---------------------------------- | ------------------ |
+| `type`            | string | Must be `"individual"`             | `"individual"`     |
+| `name`            | string | Beneficiary's full legal name      | `"Jane Smith"`     |
+| `taxId`           | string | Beneficiary's personal tax ID      | `"987.654.321-00"` |
+| `birthDate`       | string | Date of birth (YYYY-MM-DD)         | `"1985-05-15"`     |
+| `country`         | string | ISO 3166-1 alpha-3 country code    | `"BRA"`            |
+| `email`           | string | Beneficiary's email                | `"jane@acme.com"`  |
+| `sharePercentage` | number | Ownership percentage (must be ≥20) | `30`               |
 
 <Note>
-  Include all beneficiaries with 20%+ ownership. Each requires KYC documents.
+  Include all beneficiaries with 20%\+ ownership. Each requires KYC documents.
 </Note>
 
 ### Response
 
-The response includes the business `customerId`, beneficiary IDs, and a compliance link:
+The response includes the business `customerId`, beneficiary IDs, and a KYB link:
 
 ```json
 {
@@ -162,7 +158,7 @@ The response includes the business `customerId`, beneficiary IDs, and a complian
 ```
 
 <Tip>
-  Use the `link` field for Sumsub's web interface as an alternative to API document upload.
+  You can either use the API endpoints or the `links` provided in the response above to proceed with the next steps. For businesses with other businesses as beneficiaries, only `link` is supported.
 </Tip>
 
 ## Step 2: Upload Required Documents
@@ -172,6 +168,7 @@ Business customers require corporate documents and KYC documents for each benefi
 ### Business Documents Required
 
 #### 1. Legal Incorporation Documents
+
 - Articles of Incorporation (`incorporation_articles`)
 - Certificate of Formation
 - State Business Registration Extract
@@ -179,24 +176,28 @@ Business customers require corporate documents and KYC documents for each benefi
 - Shareholder Registry (`shareholder_registry`)
 
 #### 2. Business Proof of Address
+
 - Must be dated within last 3 months
 
 ### Beneficiary Documents Required
 
-For EACH beneficiary with 20%+ ownership:
+For each beneficiary with 20%\+ ownership:
 
 #### 1. Identity Document (Choose One)
+
 - National ID Card (front and back)
 - Driver's License (front and back)
 - Passport
 
 #### 2. Proof of Address
-- Must be dated within last 3 months
+
+- Must be dated within the last 3 months
 
 ### Upload Examples
 
 <CodeGroup>
-```bash Business Document
+
+```bash Articles of Incorporation
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F "file=@/path/to/incorporation_articles.pdf" \
@@ -205,6 +206,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
     "country": "BRA"
   }'
 ```
+
 
 ```bash Business Proof of Address
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
@@ -215,6 +217,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
     "country": "BRA"
   }'
 ```
+
 
 ```bash Beneficiary Identity Document
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
@@ -227,6 +230,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   }'
 ```
 
+
 ```bash Beneficiary Proof of Address
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -237,14 +241,16 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
     "beneficiaryId": "123e4567-e89b-12d3-a456-426614174001"
   }'
 ```
+
 </CodeGroup>
 
 <Warning>
-  Upload documents for ALL beneficiaries with 20%+ ownership.
+  Upload documents for ALL beneficiaries with 20%\+ ownership.
 </Warning>
 
 <Info>
   **File Requirements:**
+
   - Formats: PDF, PNG, or JPEG
   - Maximum size: 50MB per document
   - Documents must be clearly legible and fully visible
@@ -261,7 +267,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
 ```
 
 <Note>
-  Business KYB verification typically takes up to 24 hours.
+  **Processing Time:** Business KYB verification typically takes up to 24 hours, though it may take longer during peak times.
 </Note>
 
 ## Step 4: Monitor Verification Status
@@ -297,61 +303,20 @@ curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
 
 ### Verification Statuses
 
-<CardGroup cols={2}>
-  <Card title="not_started" icon="circle-pause" color="#gray">
-    Verification hasn't been initiated yet
-  </Card>
-  <Card title="under_verification" icon="spinner" color="#blue">
-    Documents are being reviewed
-  </Card>
-  <Card title="approved" icon="circle-check" color="#green">
-    Business and all beneficiaries are verified
-  </Card>
-  <Card title="temporary_rejection" icon="rotate-left" color="#orange">
-    Documents need to be re-submitted
-  </Card>
-  <Card title="final_rejection" icon="circle-xmark" color="#red">
-    Business cannot be verified
-  </Card>
-</CardGroup>
+| Type                  | Description                                      |
+| :-------------------- | :----------------------------------------------- |
+| `not_started`         | Verification hasn't been initiated yet           |
+| `under_verification`  | Documents are being reviewed                     |
+| `approved`            | Customer is fully verified and ready to transact |
+| `temporary_rejection` | Documents need to be resubmitted                 |
+| `final_rejection`     | Customer was not approved                        |
 
 <Warning>
-  Business must be approved along with ALL beneficiaries for full verification.
+  Businesses must be approved along with ALL beneficiaries for full verification.
 </Warning>
 
+---
 
 ## Next Steps
 
-After successful business customer onboarding:
-
-<CardGroup cols={3}>
-  <Card 
-    title="Configure Fees" 
-    icon="percent" 
-    href="/get-started/partner-fees"
-  >
-    Set up partner fee structures
-  </Card>
-  <Card 
-    title="Bulk Operations" 
-    icon="layer-group" 
-    href="/api-reference/transactions/on-ramp"
-  >
-    Process high-volume transactions
-  </Card>
-  <Card 
-    title="Treasury Management" 
-    icon="vault" 
-    href="/concepts/orchestration"
-  >
-    Manage corporate funds
-  </Card>
-</CardGroup>
-
-## Related Resources
-
-- [Individual Customer Onboarding](/guides/individual-onboarding)
-- [Compliance Requirements](/compliance/compliance-requirements)
-- [Beneficiary Requirements](/compliance/beneficiaries)
-- [API Authentication](/get-started/authentication)
-- [Dashboard Access](https://dashboard.lumx.io)
+Learn how to [onboard individual customers](/guides/business-onboarding) or move to exchange rates.
