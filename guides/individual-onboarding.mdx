@@ -1,9 +1,18 @@
 ---
-title: 'Onboarding an Individual Customer'
-description: 'Complete guide to onboard individual customers through KYC verification'
+title: "Onboarding an Individual Customer"
+description: "Complete guide to onboard individual customers through KYC verification"
 ---
 
 Onboard individual customers with KYC verification to enable transactions on the Lumx platform.
+
+<Tabs>
+  <Tab title="Individual">
+    
+  </Tab>
+  <Tab title="Business">
+    
+  </Tab>
+</Tabs>
 
 ## Prerequisites
 
@@ -50,18 +59,18 @@ curl -X POST https://api.lumx.io/customers \
 
 ### Required Fields
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `type` | string | Must be `"individual"` | `"individual"` |
-| `name` | string | Customer's full legal name | `"John Doe"` |
-| `taxId` | string | Valid tax ID for the country | `"123.456.789-00"` (CPF for Brazil) |
-| `birthDate` | string | Date of birth (YYYY-MM-DD) | `"1990-01-01"` |
-| `country` | string | ISO 3166-1 alpha-3 country code | `"BRA"` |
-| `email` | string | Valid email address | `"john.doe@example.com"` |
+| Field       | Type   | Description                     | Example                             |
+| ----------- | ------ | ------------------------------- | ----------------------------------- |
+| `type`      | string | Must be `"individual"`          | `"individual"`                      |
+| `name`      | string | Customer's full legal name      | `"John Doe"`                        |
+| `taxId`     | string | Valid tax ID for the country    | `"123.456.789-00"` (CPF for Brazil) |
+| `birthDate` | string | Date of birth (YYYY-MM-DD)      | `"1990-01-01"`                      |
+| `country`   | string | ISO 3166-1 alpha-3 country code | `"BRA"`                             |
+| `email`     | string | Valid email address             | `"john.doe@example.com"`            |
 
 ### Response
 
-The response includes a `customerId` and a compliance partner link:
+The response includes a `customerId` and a KYC link:
 
 ```json
 {
@@ -90,27 +99,30 @@ The response includes a `customerId` and a compliance partner link:
 ```
 
 <Tip>
-  Use the `link` field for Sumsub's web interface as an alternative to API document upload.
+  You can either use the API endpoints or the `link` provided in the response above to proceed with the next steps.
 </Tip>
 
 ## Step 2: Upload Required Documents
 
 Individual customers must provide identity verification and proof of address documents.
 
-### Document Requirements
+### Document requirements
 
-#### 1. Identity Document (Choose One)
+#### 1. Identity Document (Choose one)
+
 - National ID Card (`id_card`) - front and back
-- Driver's License (`drivers_license`) - front and back  
+- Driver's License (`drivers_license`) - front and back
 - Passport (`passport`) - single page
 
 #### 2. Proof of Address
-- Must be dated within last 3 months
+
+- Must be dated within the last 3 months
 - Shows full name and residential address
 
 ### Upload Examples
 
 <CodeGroup>
+
 ```bash Passport Upload
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -120,6 +132,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
     "country": "BRA"
   }'
 ```
+
 
 ```bash ID Card - Front Side
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
@@ -132,6 +145,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   }'
 ```
 
+
 ```bash ID Card - Back Side
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -143,6 +157,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   }'
 ```
 
+
 ```bash Proof of Address
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -152,10 +167,12 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
     "country": "BRA"
   }'
 ```
+
 </CodeGroup>
 
 <Info>
   **File Requirements:**
+
   - Formats: PDF, PNG, or JPEG
   - Maximum size: 50MB per document
   - Documents must be clearly legible and fully visible
@@ -211,61 +228,26 @@ curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
 
 ### Verification Statuses
 
-<CardGroup cols={2}>
-  <Card title="not_started" icon="circle-pause" color="#gray">
-    Verification hasn't been initiated yet
-  </Card>
-  <Card title="under_verification" icon="spinner" color="#blue">
-    Documents are being reviewed
-  </Card>
-  <Card title="approved" icon="circle-check" color="#green">
-    Customer is fully verified and ready to transact
-  </Card>
-  <Card title="temporary_rejection" icon="rotate-left" color="#orange">
-    Documents need to be re-submitted
-  </Card>
-  <Card title="final_rejection" icon="circle-xmark" color="#red">
-    Customer cannot be verified
-  </Card>
-</CardGroup>
-
-### Handling Rejections
-
-If rejected, check `statusReason` in the response, upload corrected documents, and restart verification.
-
+| Type                  | Description                                      |
+| :-------------------- | :----------------------------------------------- |
+| `not_started`         | Verification hasn't been initiated yet           |
+| `under_verification`  | Documents are being reviewed                     |
+| `approved`            | Customer is fully verified and ready to transact |
+| `temporary_rejection` | Documents need to be resubmitted                 |
+| `final_rejection`     | Customer was not approved                        |
 
 ## Next Steps
 
 After successful individual customer onboarding:
 
 <CardGroup cols={3}>
-  <Card 
-    title="Add Funds" 
-    icon="money-bill-transfer" 
-    href="/api-reference/transactions/on-ramp"
-  >
+  <Card title="Add Funds" icon="money-bill-transfer" href="/api-reference/transactions/on-ramp">
     Convert fiat to stablecoins
   </Card>
-  <Card 
-    title="Make Transfers" 
-    icon="arrows-rotate" 
-    href="/api-reference/transactions/transfer"
-  >
+  <Card title="Make Transfers" icon="arrows-rotate" href="/api-reference/transactions/transfer">
     Send funds between customers
   </Card>
-  <Card 
-    title="Withdraw Funds" 
-    icon="bank" 
-    href="/api-reference/transactions/off-ramp"
-  >
+  <Card title="Withdraw Funds" icon="bank" href="/api-reference/transactions/off-ramp">
     Convert stablecoins to fiat
   </Card>
 </CardGroup>
-
-## Related Resources
-
-- [Business Customer Onboarding](/guides/business-onboarding)
-- [API Authentication](/get-started/authentication)
-- [Testing Environment](/get-started/testing)
-- [Webhook Integration](/get-started/webhooks)
-- [Compliance Requirements](/compliance/compliance-requirements)
