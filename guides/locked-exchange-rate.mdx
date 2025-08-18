@@ -4,7 +4,11 @@ description: "Lock a guaranteed FX quote for a fixed time window and use it in o
 ---
 
 A **locked exchange rate** returns a guaranteed FX quote for a limited time window.\
-The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execute the on/off-ramp **before it expires**; attempts after expiry will be rejected. If you don't need guaranteed pricing, use a [**floating exchange rate**](/guides/locked-exchange-rate) instead.
+The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execute the on/off-ramp **before it expires**; attempts after expiry will be rejected.
+
+<Info>
+  Locked rates may include a premium or wider spread that depends on the selected lock duration and market conditions (longer locks typically cost more). If you don't require guaranteed pricing, consider using a [floating exchange rate ](/guides/floating-exchange-rate)instead.
+</Info>
 
 ---
 
@@ -12,7 +16,7 @@ The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execut
 
 <Steps>
   <Step title="Request a locked rate">
-    Ask for a guaranteed rate with a specified lock duration.
+    Request a guaranteed rate with a specified lock-in duration.
   </Step>
   <Step title="Receive the rate ID">
     Get `exchangeRateId` plus `expiresAt` (UTC).
@@ -30,11 +34,11 @@ The response includes an `exchangeRateId` and `expiresAt`. Use this ID to execut
 ## Create a locked rate
 
 Call `/exchange-rates` with `"type": "locked"`.\
-You can pass a `partnerFeeId` to bake partner fees into the quote.
+You can pass a `partnerFeeId` to bake partner fees into the rate.
 
 ### Request example
 
-```bash
+```bash Request expandable
 curl -X POST https://api.lumx.io/exchange-rates \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
