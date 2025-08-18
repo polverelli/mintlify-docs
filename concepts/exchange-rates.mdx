@@ -1,94 +1,147 @@
 ---
 title: "Exchange Rates"
-description: "Understanding floating and locked exchange rates"
+description: "Concepts behind floating and locked rates and how to use them"
 ---
 
-The Lumx platform offers two types of exchange rates for currency conversion: **floating** and **locked** rates. Each serves different use cases and provides specific benefits.
+## Overview
 
-## Floating Exchange Rates
+Lumx provides two ways to deal with currency conversions used in **on-ramp** and **off-ramp** transactions:
 
-Floating rates provide real-time currency conversion rates that fluctuate based on current market conditions. The rate is calculated at the moment of the quote request and again at transaction execution.
+- **Floating rate** — market-aligned pricing determined at **execution time**.
+- **Locked rate** — a **guaranteed quote** you reserve for a short **time window** and then execute with its `exchangeRateId`.
 
-### When to Use Floating Rates
-- Immediate transaction execution
-- Comfortable with rate fluctuations  
-- Avoiding locking fees
-- Real-time rate discovery
+Both rate types return the **base FX**, a **fee breakdown** (Lumx \+ optional Partner Fee), and the **effective (final) rate/amount** you’ll settle at.
 
-### Key Characteristics
-- No rate guarantee
-- Market rate at execution time
-- Optional partner fee configuration
-- High flexibility
+---
 
-## Locked Exchange Rates
+## How exchange rates are used
 
-Locked rates provide a guaranteed conversion rate for a specific time window, offering rate certainty and protection against market fluctuations.
+You can request a rate, review it, and then create a transaction.
 
-### When to Use Locked Rates
-- Need rate certainty before execution
-- Protection against adverse rate movements
-- Displaying exact conversion amounts to users
-- Multi-step approval processes
+### Floating Rate (typical flow)
 
-### Time Lock Options
-- **30 seconds**: Quick confirmations, automated systems
-- **1 minute**: Standard user interactions
-- **5 minutes**: Complex approvals, multi-step processes
+<Steps>
+  <Step title="Request a floating rate">
+    Call the exchange rate endpoint with `"type": "floating"` and the intended currencies/amount.
+  </Step>
+  <Step title="Review rate">
+    Inspect base rate, fees, and effective (final) rate.
+  </Step>
+  <Step title="Execute transaction">
+    Create the on-/off-ramp with currencies/amounts; the effective rate is evaluated at execution.
+  </Step>
+</Steps>
 
-### Key Characteristics
-- Guaranteed rate for lock duration
-- Both source and target amounts required
-- One-time use per rate ID
-- Expires after time lock duration
+See the guide: [**Use a floating exchange rate**](/guides/floating-exchange-rate).
 
-## Comparison: Floating vs. Locked Rates
+### Locked Rate (typical flow)
 
-| Feature | Floating Rate | Locked Rate |
-|---------|--------------|-------------|
-| Rate Guarantee | No | Yes (for specified duration) |
-| Lock Duration | N/A | 30s, 1m, or 5m |
-| Amount Specification | Source only | Both source and target |
-| Best For | Immediate execution | Rate certainty needed |
-| Rate ID Required | No | Yes |
-| Expiration | No | Yes |
-| Setup Required | Optional partnerFeeId | Exchange rate must be locked first |
+<Steps>
+  <Step title="Lock a rate">
+    Call the rates endpoint with `"type": "locked"` and a `timeLock` (e.g., `30s`, `1m`, `5m`).
+  </Step>
+  <Step title="Receive ID and expiry">
+    You get an `exchangeRateId` and `expiresAt` (UTC).
+  </Step>
+  <Step title="Execute before expiry">
+    Create the on-/off-ramp passing the `exchangeRateId`. The transaction settles at the locked rate.
+  </Step>
+</Steps>
 
-## Fee Structure
+See the guide: [**Use a locked exchange rate**](/guides/locked-exchange-rate).
 
-Both rate types support transparent fee structures:
+---
 
-### Lumx Fees
-- Platform fees (percentage + flat amount)
-- Applied to all transactions
-- Calculated transparently in quotes
+## When to use each
 
-### Partner Fees  
-- Custom fees via `partnerFeeId`
-- Optional configuration
-- Applied on top of Lumx fees
+### Floating — use when you want:
 
-## Rate Benefits
+- Immediate execution and market-aligned pricing
+- Simpler UX (no lock countdowns)
+- No lock premium
 
-### Floating Rate Benefits
-- Real-time market rates
-- No locking overhead
-- Flexible execution timing
-- Lower complexity
+### Locked — use when you need:
 
-### Locked Rate Benefits
-- **Rate Guarantee**: Protected for lock duration
-- **Fee Transparency**: All fees calculated upfront
-- **User Experience**: Display exact amounts before commitment
-- **Risk Management**: Protection against volatility
+- **Price certainty** before asking a user to pay/approve
+- Exact amounts displayed in UI/quotes/invoices
+- Multi-step or approval flows that can’t tolerate drift
 
-## Important Considerations
+---
 
-### Rate Volatility
-Floating rates change between quote and execution, while locked rates remain fixed during the lock window.
+## Time lock options (locked rates)
 
-### Time Management
-Locked rates must be used before expiration. Monitor the `expiresAt` timestamp for timely execution.
+- `30s` — fast confirmations / automated flows (default)
+- `1m` — standard user interactions
+- `5m` — multi-step approvals
 
-### One-Time Use
-Each locked rate ID can only be used once. Create new locked rates for each transaction.
+---
+
+## Key characteristics
+
+| Feature                     | Floating rate                | Locked rate                                         |
+| :-------------------------- | :--------------------------- | :-------------------------------------------------- |
+| Rate guarantee              | No                           | Yes (for lock window)                               |
+| Lock duration               | N/A                          | `30s`, `1m`, `5m`                                   |
+| Amount inputs               | Source or target amount      | Source **and/or** target amount (per your flow)     |
+| Quote ID (`exchangeRateId`) | Not used                     | **Required**                                        |
+| Expiration                  | No                           | **Yes** (`expiresAt`)                               |
+| Fees                        | Lumx \+ optional partner     | Lumx \+ optional partner (lock may include premium) |
+| Best for                    | Immediate exec, low friction | Guaranteed pricing, exact user quotes               |
+
+---
+
+## What’s inside an exchange rate
+
+A rate response (floating or locked) provides:
+
+- **Base rate** — the pre-fee rate between the pair.
+- **Fees** — broken down by **Lumx** and (optionally) **partner** (percentage in bps and/or flat).
+- **Final amounts/rate** — effective values **after fees**; these are the numbers that matter for the transaction.
+- **For locked**: `id` (your `exchangeRateId`) and `expiresAt`.
+
+<Info>
+  Exact field names and examples are shown in the step-by-step guides.
+</Info>
+
+---
+
+## How pricing works (at a glance)
+
+- **Floating**: priced at execution based on current liquidity; fees are applied to derive the effective rate.
+- **Locked**: priced upfront, then reserved; may include a **lock premium** that scales with the **lock duration** and live market conditions.
+
+<Tip>
+  Keep lock windows as short as your UX allows to minimize premium and expiry risk.
+</Tip>
+
+---
+
+## Common errors & handling
+
+- `rate_expired` — The locked quote expired before execution. Request a new locked rate or switch to floating.
+- `invalid_exchangeRateId` — The ID is unknown or already used (locked quotes are single-use).
+- `unsupported_pair`\*\*/ \*\* `amount_out_of_range` — The currency pair or size isn’t currently quotable; adjust inputs.
+
+For transaction-level errors (e.g., payment/funding expiry, invalid payout details), see the specific guides:
+
+- [**On-Ramp Transactions**](/guides/on-ramp-transactions)
+- [**Off-Ramp Transactions**](/guides/off-ramp-transactions)
+
+---
+
+## Best practices
+
+- **Choose the simplest path**: prefer **floating** unless the user or workflow requires a guaranteed number.
+- **Short locks win**: use the smallest `timeLock` that fits your UX to reduce premium and timeout risk.
+- **Show a countdown** (locked): display time remaining to pay/approve; disable the action on expiry.
+- **Don’t reuse IDs**: every locked `exchangeRateId` is single-use; request a new one per transaction.
+- **Keep amounts as strings**: preserve decimal precision end-to-end.
+
+---
+
+## Related resources
+
+- **How-to:** [Use a Floating Exchange Rate](/guides/floating-exchange-rate)
+- **How-to:** [Use a Locked Exchange Rate](/guides/locked-exchange-rate)
+- **Use in flows:** [On-Ramp](/guides/on-ramp-transactions) • [Off-Ramp](/guides/off-ramp-transactions)
+- **Fees:** [Partner Fees](/concepts/partner-fees)
