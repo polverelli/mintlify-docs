@@ -26,16 +26,17 @@ Use a **floating exchange rate** when you want market-aligned pricing without lo
 Use the `/exchange-rates` endpoint with `"type": "floating"`.
 
 ```bash
-curl -X POST "$LUMX_BASE_URL/exchange-rates" \
-  -H "Authorization: Bearer $LUMX_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "floating",
-    "sourceCurrency": "BRL",
-    "sourceAmount": "5925.55",
-    "targetCurrency": "USDC",
-    "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
-  }'
+curl --request POST \
+  --url https://api.lumx.io/transactions/exchange-rates \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "type": "floating",
+  "sourceCurrency": "BRL",
+  "sourceAmount": "60000.00",
+  "targetCurrency": "USDC",
+  "partnerFeeId": "123e4567-e89b-12d3-a456-426614174004"
+}'
 ```
 
 <Info>
