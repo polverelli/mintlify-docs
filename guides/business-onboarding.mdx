@@ -181,13 +181,13 @@ Business customers require corporate documents and KYC documents for each benefi
 
 For each beneficiary with 20%\+ ownership:
 
-#### 1. Identity Document (Choose One)
+**1. Identity Document (Choose One)**
 
 - National ID Card (front and back)
 - Driver's License (front and back)
 - Passport
 
-#### 2. Proof of Address
+**2. Proof of Address**
 
 - Must be dated within the last 3 months
 
@@ -195,7 +195,7 @@ For each beneficiary with 20%\+ ownership:
 
 <CodeGroup>
 
-```bash Articles of Incorporation expandable
+```bash Articles of Incorporation
 curl -X POST https://api.lumx.io/customers/{customerId}/documents \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F "file=@/path/to/incorporation_articles.pdf" \
@@ -259,7 +259,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/documents \
 
 Once all business and beneficiary documents are uploaded, initiate the KYB verification:
 
-```bash Request expandable
+```bash Request
 curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
@@ -272,7 +272,7 @@ curl -X POST https://api.lumx.io/customers/{customerId}/verifications \
 
 Check the verification progress for both the business and its beneficiaries:
 
-```bash Request expandable
+```bash Request
 curl -X GET https://api.lumx.io/customers/{customerId}/verifications \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
