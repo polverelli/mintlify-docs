@@ -1,0 +1,104 @@
+---
+title: "Partner Fees"
+description: "Learn how to configure and earn revenue from your transactions."
+---
+
+Partner fees allow you to earn revenue from every transaction processed through Lumx. You can add these fees on top of each transaction, and we will automatically collect them from your customers and share them with you.
+
+<Note>
+  Only project admins/owners can create partner fees in the Dashboard.
+</Note>
+
+### Types of partner fees
+
+You can set two types of fees:
+
+- **Rate fee —** a percentage of the transaction amount, specified in **basis points (bps)**.\
+  _Example: 75 bps = 0.75%._
+- **Flat fee** – A fixed amount per transaction.
+
+Fees can be set independently for **On-ramps** (fiat → stablecoin) and **Off-ramps** (stablecoin → fiat).
+
+<Info>
+  You may also mark one fee as **default** (`isDefault: true`). If a transaction/exchange rate doesn’t pass a `partnerFeeId`, Lumx will apply the default (when configured).
+</Info>
+
+### Configuring Partner Fees
+
+You can create and manage Partner Fees with the Dashboard or through the API.
+
+**Using the Dashboard**
+
+1. Go to the [**Lumx Dashboard**](https://dashboard.lumx.io/)
+2. Navigate to `Settings > Partner Fees`
+3. Configure your desired fees for both on-ramps and off-ramps
+
+**Using the API**
+
+```bash
+curl --request POST \
+  --url https://api.lumx.io/partner-fees  \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "My Partner Fee",
+  "walletAddress": "0x76b74209f3542d172ca1575b5b18064594360299",
+  "fees": {
+    "onRamp": {
+      "rate": "1",
+      "flatAmount": "1"
+    },
+    "offRamp": {
+      "rate": "10",
+      "flatAmount": "1"
+    }
+  },
+  "isDefault": false
+}'
+```
+
+### Fee destination: EVM wallet
+
+To receive fees, you must register a valid **EVM-compatible wallet address**. You can:
+
+- Use a Lumx-generated wallet by creating a Customer from your entity, or
+- Add your own treasury wallet
+
+<Note>
+  We recommend **using sandbox** mode to test and confirm fee delivery before\
+  going live.
+</Note>
+
+### When fees are applied
+
+There are two moments to apply your fee, depending on how you use [Exchange Rates](/concepts/exchange-rates):
+
+- **Locked rate** — include `partnerFeeId` when **getting the exchange rate**. The fee becomes part of the locked quote and flows into the transaction created from that quote.
+- **Floating rate** — include `partnerFeeId` **when creating the transaction** (e.g., on-ramp). If omitted, the default partner fee is used (when set).
+
+---
+
+### Revenue tracking
+
+You can view your accumulated partner fee revenue at any time by visiting the Partner Fees page in the Dashboard.
+
+---
+
+### Example scenario
+
+Let's say you configure:
+
+- A 100bps fee for on-ramps
+- A \$1 flat fee for off-ramps
+
+For a \$100 on-ramp:
+
+- Your customer pays \$101 (\$100 \+ 100bps fee)
+- You receive \$1 in partner fees
+- The API response will show `fees_partner_rate: "1.00"`
+
+For a \$100 off-ramp:
+
+- Your customer pays \$101 (\$100 \+ \$1 flat fee)
+- You receive \$1 in partner fees
+- The API response will show `fees_partner_flat: "1.00"`

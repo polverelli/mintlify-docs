@@ -1,25 +1,38 @@
 ---
-title: 'Coverage'
-description: 'List of supported fiat and stablecoin currencies'
+title: "Coverage"
 ---
 
-### Fiat currencies
+We support the following fiat currencies and rails.
 
-We currently support the following fiat currencies:
+| **Currency**     | **Supported Rails**                  |
+| :--------------- | :----------------------------------- |
+| 🇧🇷 BRL         | PIX                                  |
+| 🇺🇸 USD (soon)  | Next Day ACH, Same Day ACH, and Wire |
+| 🇪🇺 EURO (soon) | SEPA                                 |
+| 🇲🇽 MXN (soon)  | SPEI                                 |
 
-| Method              | Country      | Estimated settlement time |
-| ------------------- | ------------ | ------------------------- |
-| pix                 | 🇧🇷 Brazil    | \~5 minutes               |
-| wire _(Q4/25)_      | 🇺🇸 United States  | \~4-6 hours          |
-| spei _(Q4/25)_      | 🇲🇽 Mexico    | \~5 minutes               |
+We support the following blockchains.
 
-### Stablecoins
+| Blockchain      | Description                                               | Block Explorers                                                                                  |
+| --------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Ethereum        | Ethereum Mainnet (1), Ethereum Holesky Testnet (11155111) | [Mainnet](https://etherscan.io/), [Testnet](https://holesky.etherscan.io/)                       |
+| Polygon         | Polygon Mainnet (137), Polygon Amoy Testnet (80002)       | [Mainnet](https://polygonscan.com/), [Testnet](https://amoy.polygonscan.com/)                    |
+| Base            | Base Mainnet (8453), Base Sepolia Testnet (84532)         | [Mainnet](https://basescan.org/), [Testnet](https://sepolia.basescan.org/)                       |
+| Arbitrum        | Arbitrum One (42161), Arbitrum Sepolia Testnet (421614)   | [Mainnet](https://arbiscan.io/), [Testnet](https://sepolia.arbiscan.io/)                         |
+| Solana _(Soon)_ | Solana Mainnet, Solana Testnet                            | [Mainnet](https://explorer.solana.com/), [Testnet](https://explorer.solana.com/?cluster=testnet) |
 
-We currently support the following stablecoins:
+Below are all the **_fiat-to-stablecoin_** and **_stablecoin-to-fiat_** routes we support:
 
-| Ticker | Status    |
-| ------ | --------- |
-| USDC   | Supported |
-| USDT\* | Supported |
+| **Blockchain** | **Currency** | **BRL** | **USD (soon)** | **EUR (soon)** | **MXN (soon)** |
+| :------------- | :----------- | :------ | :------------- | :------------- | :------------- |
+| Arbitrum       | USDC         | ✅       | ✅              | ✅              | ✅              |
+| Arbitrum       | USDT         | ✅       | ✅              | ✅              | ✅              |
+| Base           | USDC         | ✅       | ✅              | ✅              | ✅              |
+| Ethereum       | USDC         | ✅       | ✅              | ✅              | ✅              |
+| Ethereum       | USDT         | ✅       | ✅              | ✅              | ✅              |
+| Polygon        | USDC         | ✅       | ✅              | ✅              | ✅              |
+| Polygon        | USDT         | ✅       | ✅              | ✅              | ✅              |
 
-\*_USDT is **not** supported on Base_.
+<Info>
+  **Deposits sent to unsupported asset/blockchain pairs** or **mismatched addresses** may be **irretrievable and permanently lost**. Please review our list of supported blockchains carefully before initiating a payment.
+</Info>

@@ -1,69 +1,37 @@
 ---
 title: "Customers"
-description: "Understanding customers and wallets in the Lumx platform"
 ---
 
-## What is a Customer?
+A **customer** represents a user of your business who wants to buy, sell, or transfer digital money (stablecoins). Think of customers as the people or businesses using your product or service.
 
-A **customer** represents a user of your business who wants to buy, sell, or transfer digital money (stablecoins). Think of customers as the people or businesses using your application.
+Our APIs allow you to register your end users with Lumx, enabling seamless and compliant movement of stablecoins or fiat between your users’ wallets or bank accounts.
 
-When someone signs up for your service, you create a customer profile for them in Lumx. This gives them:
-- A unique identity in the system
-- An automatic crypto wallet to hold their funds
-- The ability to convert money between traditional (BRL) and digital (USDC/USDT) formats
+Lumx handles all **KYC (Know Your Customer)** and **KYB (Know Your Business)** verification steps, so you have confidence that your users meet all applicable compliance requirements.
 
-## Customer Types
+---
 
-### Individual Customers
-Regular people using your service for personal transactions.
+### Customer Registration
 
-**What they need:**
-- Full name
-- Tax ID (CPF in Brazil)
-- Birth date
-- Email address
-- Country
+To register a new customer, use either the API or KYC Links. Upon registration:
 
-**Example:** Maria wants to send money to her family abroad using your app.
+- Customers must **agree to Lumx's Terms of Service**.
+- You must provide **basic identity information** such as:
+  - Full name
+  - Email address
+  - Government-issued identifiers (e.g., SSN for individuals, EIN/TIN for businesses)
 
-### Business Customers
-Companies using your service for business operations.
+Lumx will validate this information to approve the customer for transactions. If additional information is needed, Lumx will return precise requirements for completion of the KYC/KYB process.
 
-**What they need:**
-- Legal company name
-- Business tax ID (CNPJ in Brazil)
-- Incorporation date
-- Email address
-- Country
-- List of owners (beneficiaries with 20%+ ownership)
+📘**See Also**: [**Compliance Requirements**](/compliance/compliance-requirements) for a detailed list of required fields and document types.
 
-**Example:** A startup wants to pay international suppliers using stablecoins.
+---
 
-## How Wallets Work
+Lumx automatically generates a unique **wallet**  for every customer created and verified. Think of it like a digital account that can:
 
-Every customer automatically gets a **crypto wallet** when they're created. Think of it like a digital bank account that can:
-
-- **Hold** digital money (USDC and USDT stablecoins)
+- **Hold** digital money (stablecoins)
 - **Receive** funds from other wallets or bank transfers
 - **Send** money to other customers or external wallets
 - **Show balance** in real-time
-
-### Key Points About Wallets
-
-<CardGroup cols={2}>
-  <Card title="Automatic Creation" icon="wand-magic-sparkles">
-    No setup needed - wallets are created instantly with each customer
-  </Card>
-  <Card title="Multi-Currency" icon="coins">
-    Each wallet can hold both USDC and USDT stablecoins
-  </Card>
-  <Card title="Blockchain Based" icon="cube">
-    Built on Polygon blockchain for fast, secure transactions
-  </Card>
-  <Card title="No Keys Required" icon="key">
-    Lumx manages the technical complexity - no private keys to worry about
-  </Card>
-</CardGroup>
 
 ## Customer Verification (KYC/KYB)
 
@@ -82,33 +50,9 @@ Before customers can move money, they need to be verified. This is like opening 
     Documents are reviewed (usually within minutes)
   </Step>
   <Step title="Approval">
-    Once approved, customer can start transacting
+    Once approved, the customer can start transacting
   </Step>
 </Steps>
-
-### Required Documents
-
-**For Individuals:**
-- Government ID (passport, driver's license, or national ID)
-- Proof of address (utility bill, bank statement)
-
-**For Businesses:**
-- Company registration documents
-- Proof of business address
-- Documents for each owner (20%+ ownership)
-
-## Transaction Limits
-
-Once verified, customers have daily and monthly limits for safety:
-
-| Customer Type | Per Transaction | Daily Limit | Monthly Limit |
-|--------------|-----------------|-------------|---------------|
-| Individual | $1,000 | $10,000 | $100,000 |
-| Business | $10,000 | $100,000 | $1,000,000 |
-
-<Note>
-  Higher limits may be available for enterprise customers. Contact support for more information.
-</Note>
 
 ## Customer Lifecycle
 
@@ -129,15 +73,12 @@ graph LR
   <Accordion title="Can customers have multiple wallets?">
     No, each customer has one wallet that can hold multiple currencies (USDC and USDT).
   </Accordion>
-  
   <Accordion title="What happens if verification fails?">
     Customers can re-submit corrected documents. Common issues include blurry photos or expired documents.
   </Accordion>
-  
   <Accordion title="Can customers use the platform without verification?">
     Customers can be created without verification, but they cannot perform transactions until verified.
   </Accordion>
-  
   <Accordion title="How long does verification take?">
     Individual verification usually takes minutes. Business verification can take up to 24 hours.
   </Accordion>
@@ -148,18 +89,10 @@ graph LR
 Now that you understand customers and wallets:
 
 <CardGroup cols={2}>
-  <Card 
-    title="Learn About Exchange Rates" 
-    icon="chart-line" 
-    href="/concepts/exchange-rates"
-  >
+  <Card title="Learn About Exchange Rates" icon="chart-line" href="/concepts/exchange-rates">
     How currency conversion pricing works
   </Card>
-  <Card 
-    title="Understand Transactions" 
-    icon="arrows-rotate" 
-    href="/concepts/transactions"
-  >
+  <Card title="Understand Transactions" icon="arrows-rotate" href="/concepts/transactions">
     How money moves in the system
   </Card>
 </CardGroup>
